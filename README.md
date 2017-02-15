@@ -1,6 +1,6 @@
 # kaby2  
 Directory structure  
-   ./templates   <---contains .html files  
-   ./static  
-      /js   <---contains .js files (Javascript)   
-      /css  <---contains .css files  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;./templates   <---contains .html files  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;./static  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/js   <---contains .js files (Javascript)   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/css  <---contains .css files  
