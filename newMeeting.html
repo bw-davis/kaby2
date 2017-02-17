@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KABY meeting planner</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+
+
+  		.red li.active a,
+  		.red li.active a:focus,
+  		.red li.active a:hover {
+  			background-color: lightblue;
+  		}
+
+ 
+
+	 h3{
+			font-weight:500;
+			font-variant: small-caps;
+			font-family: "Times New Roman", Times, serif;
+		}
+
+	 h2{
+			font-weight:500;
+			font-variant: small-caps;
+			font-family: "Times New Roman", Times, serif;
+		}
+
+	 h1{
+			font-weight:bold;
+			color: #FF69B4;
+		}
+
+
+		body{
+			background-color: #eeeeee;
+		}
+
+	    #body-wrapper {
+			background-color: #ffffff;
+			margin-bottom: 0;
+			margin: 0 auto;
+			border-radius: 0; 
+			width: 100%;
+			position: auto;
+			max-width: 1100px;
+	    }
+
+	    
+
+
+  </style>
+</head>
+<body>
+
+
+<br>
+<div class="container" id="body-wrapper">
+	<div class="container text-center">
+		<div class="row content">
+			<div class="col-sm-5 text-left">
+				<h1>KABY Meeting Planner</h1>
+			</div>
+			<div class="col-sm-5 text-right">
+			<br>
+			<br>
+			</div>
+		</div>
+	</div>
+	<hr>
+	<ul class="nav nav-pills red">
+			<li role="presentation" ><a href="index.html">Home</a></li>
+		    <li role="presentation" class="active"><a href="#">New Meeting</a></li>
+		    <li role="presentation"><a href="login.html ">Log out</a></li>
+		 </ul>
+			<!-- <div class="container text-center">
+				<div class="row content">
+					<div class="col-sm-3 text-left">
+						</div>
+					    <div class="col-sm-8 text-left">
+								<ul>
+									<li>Meeting name</li>
+									<li>Meeting Description</li>
+									<li>Time range</li>
+									<li>Date range</li>
+									<li>emails</li>
+								</ul>
+						</div>
+
+				</div>
+		  </div> -->
+		  <br/>
+		  <br>
+
+		<div class="form-group row text-center">
+		 	<label for="example-text-input" class="col-sm-2 col-form-label">Meeting Name</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="Meeting name" id="example-text-input">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="example-text-input2" class="col-sm-2 col-form-label">Starting Date</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" placeholder="11/11/11" id="example-text-input2">
+		 	</div>
+		 	<label for="example-text-input3" class="col-sm-2 col-form-label">Ending Date</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" placeholder="11/11/11" id="example-text-input3">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="start_time" class="col-sm-2 col-form-label">Starting Time</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" placeholder="2 pm" id="start_time">
+		 	</div>
+		 	<label for="end_time" class="col-sm-2 col-form-label">Ending Time</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" placeholder="2:30 pm" id="end_time">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email1" class="col-sm-2 col-form-label">Contact 1</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email1">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email2" class="col-sm-2 col-form-label">Contact 2</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email2">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email3" class="col-sm-2 col-form-label">Contact 3</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email3">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email4" class="col-sm-2 col-form-label">Contact4</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email4">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="example-text-input4" class="col-sm-2 col-form-label">Description</label>
+			<div class="col-sm-10">
+  				<textarea class="form-control" rows="5" id="example-text-input4"></textarea>
+		 	</div>
+		</div>
+		<div class="container">
+			<div class="row content">
+			<div class="col-sm-4"> </div>
+			<div class="col-sm-2 text-right">
+				<a class="btn btn-primary" href="index.html"> Submit </a>
+			</div>
+			<div class="col-sm-2 text-left">
+				<a class="btn btn-danger" href="index.html"> Cancel </a>
+			</div>
+			</div>
+		</div>
+		<br>
+		<br>
+
+  </div>
+
+</body>
+</html>
