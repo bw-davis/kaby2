@@ -16,19 +16,21 @@ app.config['MYSQL_DATABASE_HOST'] = 'ix.cs.uoregon.edu'
 app.config['MYSQL_DATABASE_PORT'] = 3225
 mysql.init_app(app)
 
+"""
 conn = mysql.connect()
+cur = conn.cursor()
+cur.execute("SELECT * from user")
+rows = cur.fetchall()
+conn.close()
+
+"""
 
 @app.route('/')
 @app.route('/login')
 def login():
-    cur = conn.cursor()
-    cur.execute("SELECT * from user")
-
-    rows = cur.fetchall()
-    conn.close()
-
-    for row in rows:
-		print row
+	
+    #for row in rows:
+		#print row
     return render_template('login.html') 
 	
 
@@ -49,4 +51,23 @@ def form_action():
 	print(date);
 	return flask.redirect(flask.url_for("home"))
 
+
+@app.route('/login_action', methods=['POST'])
+def login_action():
+	name = request.form.get('user_name')
+	passwd = "{}".format(request.form.get('password'))
+	conn =  mysql.connect()
+	cur = conn.cursor()
+	query_string = "SELECT password from user where fname='{}'".format(name)
+	cur.execute(query_string)
+	rows = cur.fetchall()
+	for row in rows:
+		if (row[0] == passwd): 
+			print("passowords Match")
+			conn.close()
+			return flask.redirect(flask.url_for("home"))
+		else:
+			print("row{} does not equal password{}".format(row, passwd))
+	conn.close()
+	return flask.redirect(flask.url_for("login"))
 
