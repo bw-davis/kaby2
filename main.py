@@ -71,3 +71,12 @@ def login_action():
 	conn.close()
 	return flask.redirect(flask.url_for("login"))
 
+#################
+#
+# Favicon function rendering
+#
+#################
+  
+@app.route('/favicon.ico')
+def favicon():
+    return flask.send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
