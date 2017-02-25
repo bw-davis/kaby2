@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KABY meeting planner</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- for FF, Chrome, Opera 
+  <link rel="icon" type="image/png" href="images/kaby.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="images/kaby.png" sizes="32x32">
+	-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+
+	 h3{
+			font-weight:500;
+			font-variant: small-caps;
+			font-family: "Times New Roman", Times, serif;
+		}
+
+	 h2{
+			font-weight:500;
+			font-variant: small-caps;
+			font-family: "Times New Roman", Times, serif;
+		}
+
+	 h1{
+			font-weight:bold;
+			color: #ff00bf;
+		}
+
+
+		body{
+			background-color: #eeeeee;
+		}
+
+		.scrollable {
+		    height: 100px; /* or any value */
+		    overflow-y: auto;
+		    border-style: solid;
+		    border-width: 1px;
+		    border-color: grey;
+		}
+
+	    #body-wrapper {
+			background-color: #ffffff;
+			margin-bottom: 0;
+			margin: 0 auto;
+			border-radius: 0; 
+			width: 100%;
+			position: auto;
+			max-width: 1100px;
+	    }
+
+	    .red li.active a,
+  		.red li.active a:focus,
+  		.red li.active a:hover {
+  			background-color: lightblue;
+  		}
+
+
+
+  </style>
+</head>
+<body>
+
+
+<br>
+<div class="container" id="body-wrapper">
+	<div class="container text-center">
+		<div class="row content">
+			<div class="col-sm-5 text-left">
+				<h1>KABY Meeting Planner</h1>
+			</div>
+			<div class="col-sm-5 text-right">
+			<br>
+			<br>
+			</div>
+		</div>
+	</div>
+	<hr>
+	<ul class="nav nav-pills red">
+			<li role="presentation"><a href="#">Home</a></li>
+		    <li role="presentation"><a href="newMeeting">New Meeting</a></li>
+		    <li role="presentation"class="active"><a href="newContact">New Contacts</a></li>
+		    <li role="presentation"><a href="login">Log out</a></li>
+	</ul>
+	<hr>
+	<br>
+	<br>
+
+		<form action="form_action" method="post">
+		<div class="form-group row text-center" >
+		 	<label for="example-text-input" class="col-sm-2 col-form-label">Group name</label>
+			<div class="col-sm-7">
+				<input class="form-control" type="text" placeholder="Group name" id="example-text-input">
+		 	</div>
+		 	<label for="group_number" class="col-sm-2 col-form-label">Group number</label>
+			<div class="col-sm-1">
+				<input class="form-control" type="text" placeholder="2" id="group_number">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="date" class="col-sm-2 col-form-label">Starting Date</label>
+			<div class="col-sm-4">
+				<input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
+		 	</div>
+		 	<label for="date2" class="col-sm-2 col-form-label">Ending Date</label>
+			<div class="col-sm-4">
+				<input class="form-control" id="date2" name="date2" placeholder="MM/DD/YYY" type="text"/>
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="start_time" class="col-sm-2 col-form-label">Starting Time</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" placeholder="2 pm" id="start_time">
+		 	</div>
+		 	<label for="end_time" class="col-sm-2 col-form-label">Ending Time</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" placeholder="2:30 pm" id="end_time">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email1" class="col-sm-2 col-form-label">Contact 1</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email1">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email2" class="col-sm-2 col-form-label">Contact 2</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email2">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email3" class="col-sm-2 col-form-label">Contact 3</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email3">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email4" class="col-sm-2 col-form-label">Contact4</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email4">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="example-text-input4" class="col-sm-2 col-form-label">Description</label>
+			<div class="col-sm-10">
+  				<textarea class="form-control" rows="5" id="example-text-input4"></textarea>
+		 	</div>
+		</div>
+		<div class="container">
+			<div class="row content">
+			<div class="col-sm-4"> </div>
+			<div class="col-sm-2 text-right">
+				<!--<a class="btn btn-primary" href="#"> Submit </a>
+				<input class="btn btn-danger" type="reset" value="Erase">-->
+				<input class="btn btn-success" type="submit" value="Submit">
+			</div>
+			<div class="col-sm-2 text-left">
+				<a class="btn btn-danger" href="home"> Cancel </a>
+			</div>
+			</div>
+		</div>
+		</form>
+		<br>
+		<br>
+
+  </div>
+  <br>
+  <br>
+</body>
+</html>
