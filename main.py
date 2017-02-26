@@ -25,6 +25,19 @@ conn.close()
 
 """
 
+group_leaders = [1,2,3]
+
+def get_group_leaders():
+	group_leaders 
+	conn = mysql.connect()
+	cur = conn.cursor()
+	query_string="select group_leader_email from group_leader;"
+	cur.execute(query_string)
+	rows = cur.fetchall()
+	for row in rows:
+		group_leaders.append(row[0]);
+	conn.close()
+
 @app.route('/')
 @app.route('/login')
 def login():
@@ -41,9 +54,15 @@ def home():
 
 @app.route('/newMeeting')
 def newMeeting():
-    return render_template('newMeeting.html') 
+	get_group_leaders()
+	for o in group_leaders:
+		print o
+	return render_template('newMeeting.html') 
 
 
+@app.route('/newContact')
+def newContact():
+    return render_template('newContact.html') 
 
 @app.route('/form_action', methods=['POST'])
 def form_action():
@@ -71,12 +90,21 @@ def login_action():
 	conn.close()
 	return flask.redirect(flask.url_for("login"))
 
+
+
+@app.route('/newMeeting')
+def a():
+    print("HELLO")
+    return render_template('newMeeting.html') 
+
+
 #################
 #
 # Favicon function rendering
 #
 #################
-  
+"""
 @app.route('/favicon.ico')
 def favicon():
     return flask.send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+"""
