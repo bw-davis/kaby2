@@ -57,8 +57,6 @@ def home():
 @app.route('/newMeeting')
 def newMeeting():
 	get_group_leaders()
-	for o in group_leaders:
-		print o
 	return render_template('newMeeting.html',  leaders=group_leaders)
 
 
@@ -71,10 +69,6 @@ def newContact():
 def timePage():
     return render_template('time_picker.html') 
 
-
-@app.route('/newContact')
-def newContact():
-    return render_template('newContact.html') 
 
 
 
@@ -89,7 +83,7 @@ def form_action():
     num_dates = len(dates)
     print("num dates entered: {}".format(num_dates))
     for d in dates:
-        print "date:{}".format(d)
+        print ("date:{}".format(d))
     name = request.form.get('mName')
     desc = request.form.get('desc')
     loc= request.form.get('loc')
@@ -100,7 +94,7 @@ def form_action():
     query_string = "insert into meetings (meeting_id, location, description) values ({}, '{}', '{}')".format("Null",loc, desc)
     cur.execute(query_string)
     cur_meeting_id = cur.lastrowid
-    print "row id : {}".format(cur_meeting_id);
+    print ("row id : {}".format(cur_meeting_id));
     conn.commit()
     conn.close()
     return render_template('time_picker.html', dates=dates) 
@@ -125,7 +119,6 @@ def login_action():
 	conn.close()
 	return flask.redirect(flask.url_for("login"))
 
-<<<<<<< HEAD
 @app.route('/contact_action', methods=['POST'])
 def contact_action():
 	group_name = request.form.get('group_name')
@@ -142,7 +135,6 @@ def contact_action():
 	conn.commit()
 	conn.close()
 	return flask.redirect(flask.url_for("home"))
-=======
 
 @app.route('/newmeeting_action', methods=['POST'])
 def newmeeting_action():
@@ -158,17 +150,16 @@ def newmeeting_action():
         name = "t{}".format(i+1);
         day, month, year = dates[i].split("/");
         sql_date='{}-{}-{}'.format(year, month,day);
-	time = request.form.get(name)
+        time = request.form.get(name)
         sql_time='{}:00:00'.format(time)
-        print sql_time 
+        print (sql_time) 
         query_string = "insert into meetings_times_dates (issue_ID, meeting_id, start_time, date, length) values ({}, {}, '{}', '{}', {});".format("NULL", cur_meeting_id, sql_time, sql_date, int(length_min));
         cur.execute(query_string)
-        print "row id : {}".format(cur_meeting_id);
+        print ("row id : {}".format(cur_meeting_id))
         conn.commit()
     conn.close()
     return flask.redirect(flask.url_for("home"))
 
->>>>>>> 77b94e94855271545388c3d8efe253aabd1214d5
 
 
 #################
@@ -176,11 +167,10 @@ def newmeeting_action():
 # Favicon function rendering
 #
 #################
-<<<<<<< HEAD
+
   
 
 
-=======
 """
 >>>>>>> 77b94e94855271545388c3d8efe253aabd1214d5
 @app.route('/favicon.ico')
