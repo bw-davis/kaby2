@@ -4,13 +4,18 @@
   <title>KABY meeting planner</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- for FF, Chrome, Opera 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- for FF, Chrome, Opera -->
   <link rel="icon" type="image/png" href="images/kaby.png" sizes="16x16">
   <link rel="icon" type="image/png" href="images/kaby.png" sizes="32x32">
-	-->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- Include jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<!-- Include Date Range Picker -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
   <style>
 
 	 h3{
@@ -90,67 +95,20 @@
 	<br>
 	<br>
 
-		<form action="form_action" method="post">
+		<form action="contact_action" method="post">
 		<div class="form-group row text-center" >
 		 	<label for="example-text-input" class="col-sm-2 col-form-label">Group name</label>
 			<div class="col-sm-7">
-				<input class="form-control" type="text" placeholder="Group name" id="example-text-input">
-		 	</div>
-		 	<label for="group_number" class="col-sm-2 col-form-label">Group number</label>
-			<div class="col-sm-1">
-				<input class="form-control" type="text" placeholder="2" id="group_number">
+				<input class="form-control" type="text" name="group_name" placeholder="Group name" id="example-text-input">
 		 	</div>
 		</div>
 		<div class="form-group row text-center">
-		 	<label for="date" class="col-sm-2 col-form-label">Starting Date</label>
+		 	<label for="date" class="col-sm-2 col-form-label">Email address</label>
 			<div class="col-sm-4">
-				<input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
-		 	</div>
-		 	<label for="date2" class="col-sm-2 col-form-label">Ending Date</label>
-			<div class="col-sm-4">
-				<input class="form-control" id="date2" name="date2" placeholder="MM/DD/YYY" type="text"/>
+				<input class="form-control" id="date" name="email_address" placeholder="example@uoregon.com" type="text"/>
 		 	</div>
 		</div>
-		<div class="form-group row text-center">
-		 	<label for="start_time" class="col-sm-2 col-form-label">Starting Time</label>
-			<div class="col-sm-4">
-				<input class="form-control" type="text" placeholder="2 pm" id="start_time">
-		 	</div>
-		 	<label for="end_time" class="col-sm-2 col-form-label">Ending Time</label>
-			<div class="col-sm-4">
-				<input class="form-control" type="text" placeholder="2:30 pm" id="end_time">
-		 	</div>
-		</div>
-		<div class="form-group row text-center">
-		 	<label for="email1" class="col-sm-2 col-form-label">Contact 1</label>
-			<div class="col-sm-10">
-				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email1">
-		 	</div>
-		</div>
-		<div class="form-group row text-center">
-		 	<label for="email2" class="col-sm-2 col-form-label">Contact 2</label>
-			<div class="col-sm-10">
-				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email2">
-		 	</div>
-		</div>
-		<div class="form-group row text-center">
-		 	<label for="email3" class="col-sm-2 col-form-label">Contact 3</label>
-			<div class="col-sm-10">
-				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email3">
-		 	</div>
-		</div>
-		<div class="form-group row text-center">
-		 	<label for="email4" class="col-sm-2 col-form-label">Contact4</label>
-			<div class="col-sm-10">
-				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email4">
-		 	</div>
-		</div>
-		<div class="form-group row text-center">
-		 	<label for="example-text-input4" class="col-sm-2 col-form-label">Description</label>
-			<div class="col-sm-10">
-  				<textarea class="form-control" rows="5" id="example-text-input4"></textarea>
-		 	</div>
-		</div>
+		
 		<div class="container">
 			<div class="row content">
 			<div class="col-sm-4"> </div>
