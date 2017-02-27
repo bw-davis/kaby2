@@ -69,7 +69,12 @@ def newContact():
 def timePage():
     return render_template('time_picker.html') 
 
+@app.route("/view_meeting/<meeting_id>")
+def view_meeting(meeting_id):
+    app.logger.debug("Entering view_meeting")
 
+    print(meeting_id)  
+    return render_template('view_meeting.html')
 
 
 @app.route('/form_action', methods=['POST'])
