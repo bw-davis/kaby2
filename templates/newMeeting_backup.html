@@ -30,7 +30,6 @@
             multidate: true,
         })
     });
-
     $(document).ready(function(){
         var date_input=$('input[name="date2"]'); //our date input has the name "date"
         var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
@@ -120,111 +119,61 @@
 
 		<form action="form_action" method="post">
 		<div class="form-group row text-center" >
-		 	<label for="mName" class="col-sm-2 col-form-label">Meeting Name</label>
+		 	<label for="example-text-input" class="col-sm-2 col-form-label">Meeting Name</label>
 			<div class="col-sm-10">
-				<input class="form-control" type="text" placeholder="Meeting name" id="mName" name="mName">
-		 	</div>
-		</div>
-		<div class="form-group row text-center" >
-		 	<label for="loc" class="col-sm-2 col-form-label">Meeting Location</label>
-			<div class="col-sm-10">
-				<input class="form-control" type="text" placeholder="Meeting location" id="desc" name="loc">
+				<input class="form-control" type="text" placeholder="Meeting name" id="example-text-input">
 		 	</div>
 		</div>
 		<div class="form-group row text-center">
-		 	<label for="desc" class="col-sm-2 col-form-label">Meeting Description</label>
-			<div class="col-sm-10">
-  				<textarea class="form-control" rows="5" id="desc" name="desc"></textarea>
-		 	</div>
-		</div>
-		<div class="form-group row text-center">
-		 	<label for="date" class="col-sm-2 col-form-label">Select contacts</label>
- 				<div class="col-sm-4 dropdown text-left" name="date" id="date">
-  					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Contacts
-  						<span class="caret"></span>
-					</button>
-					<div class="dropdown-menu" style="height: 6em; width: 15em; overflow: auto;">
-						{% for o in leaders%}
- 							<input id="c1" type="checkbox" name="ingredients[]" value="Cheese" />
-							<label for="c1">{{o}}</label>
- 							<br />
-              			{% endfor %}
-					</div>
-    					
-
-  					</ul>
-				</div> 
-		</div>
-		<div class="form-group row text-center">
-		 	<label for="date" class="col-sm-2 col-form-label">Select contacts</label>
- 				<!--<div class="col-sm-4 dropdown text-left" name="date" id="date">
-  					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Contacts
-  						<span class="caret"></span>
-					</button>
-					<div class="dropdown-menu" style="height: 6em; width: 15em; overflow: auto;">
- 						<input id="c1" type="checkbox" name="ingredients[]" value="Cheese" />
- 						<label for="c1">Contact 1</label>
- 						<br />
- 						<input id="c2" type="checkbox" name="ingredients[]" value="Cheese" />
- 						<label for="c2">Contact 2</label>
- 						<br />
- 						<input id="c3" type="checkbox" name="ingredients[]" value="Cheese" />
- 						<label for="c3">Contact 3</label>
- 						<br />
- 						<input id="c4" type="checkbox" name="ingredients[]" value="Cheese" />
- 						<label for="c4">Contact 4</label>
- 						<br />
- 						<input id="c5" type="checkbox" name="ingredients[]" value="Cheese" />
- 						<label for="c5">Contact 5</label>
- 						<br />
-					</div>
-    					
-  					</ul>
-				</div> 
-		</div>-->
-
-		<div class="form-group row text-center">
-		 	<label for="meeting_len" class="col-sm-2 col-form-label">Select meeting length</label>
- 				<div class="col-sm-4 dropdown text-left" name="meeting_len" id="meeting_len">
-  					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Length options
-  						<span class="caret"></span>
-					</button>
-
-					<select class="dropdown-menu" style="height: 6em; width: 15em; overflow: auto;" name="meeting_len" multiple>
-  						<option value="15">15 min</option>
-  						<option value="30">30 min</option>
-  						<option value="45">45 min</option>
-  						<option value="60">1hr</option>
-  						<option value="90">1.5hr</option>
-  						<option value="120">2hr</option>
-  						<option value="180">3hr</option>
-  						<option value="360">6hr</option>
-  						<option value="720">12hr</option>
-					</select>
-    					
-  					</ul>
-				</div> 
-		</div>
-
-
-
-
-
-
-		<div class="form-group row text-center">
-		 	<label for="date" class="col-sm-2 col-form-label">Select Dates</label>
+		 	<label for="date" class="col-sm-2 col-form-label">Starting Date</label>
 			<div class="col-sm-4">
 				<input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
 		 	</div>
+		 	<label for="date2" class="col-sm-2 col-form-label">Ending Date</label>
+			<div class="col-sm-4">
+				<input class="form-control" id="date2" name="date2" placeholder="MM/DD/YYY" type="text"/>
+		 	</div>
 		</div>
-		<br>
-		<br>
-		<br>
-		<hr>
-		<br>
-
-
-
+		<div class="form-group row text-center">
+		 	<label for="start_time" class="col-sm-2 col-form-label">Starting Time</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" placeholder="2 pm" id="start_time">
+		 	</div>
+		 	<label for="end_time" class="col-sm-2 col-form-label">Ending Time</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" placeholder="2:30 pm" id="end_time">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email1" class="col-sm-2 col-form-label">Contact 1</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email1">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email2" class="col-sm-2 col-form-label">Contact 2</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email2">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email3" class="col-sm-2 col-form-label">Contact 3</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email3">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="email4" class="col-sm-2 col-form-label">Contact4</label>
+			<div class="col-sm-10">
+				<input class="form-control" type="text" placeholder="example@uoregon.edu" id="email4">
+		 	</div>
+		</div>
+		<div class="form-group row text-center">
+		 	<label for="example-text-input4" class="col-sm-2 col-form-label">Description</label>
+			<div class="col-sm-10">
+  				<textarea class="form-control" rows="5" id="example-text-input4"></textarea>
+		 	</div>
+		</div>
 		<div class="container">
 			<div class="row content">
 			<div class="col-sm-4"> </div>
@@ -243,7 +192,6 @@
 		<br>
 
   </div>
-
   <br>
   <br>
 </body>
