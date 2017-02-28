@@ -1,9 +1,19 @@
 import flask
-from flask import Flask
-from flask import render_template
-from flask import request
+from flask import Flask, render_template, request
 from flaskext.mysql import MySQL
+from flask_mail import Mail, Message
+
 app = Flask(__name__)
+
+mail = Mail(app)
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'kabymeetingplanner@gmail.com'
+app.config['MAIL_PASSWORD'] = 'kabykabykaby'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+
 
 mysql = MySQL()
 
@@ -166,6 +176,32 @@ def newmeeting_action():
     return flask.redirect(flask.url_for("home"))
 
 
+
+
+#################
+#
+# Helper functions to be used by Flask 
+#
+#################
+
+
+def send_message(title, body, receivers):
+    '''
+    Send a message using the Kaby Meeting Planner email 
+
+    Args:
+        title: str, the title of the email
+        body:  str, the body of the email
+        receivers: list of str, the emails of recipients. Example: ["owen@uoregon.edu", "andy@gmail.com"]
+    Returns:
+        Nothing
+    '''
+    with app.app_context():
+        msg = Message(title, sender=('Kaby Meeting Planner','kabymeetingplanner@gmail.com'), recipients=receivers)
+        msg.body = body
+        mail.send(msg)
+
+#send_message("Hello", "World", ['yuboz@uoregon.edu'])
 
 #################
 #
