@@ -271,7 +271,6 @@ def send_message(title, body, receivers):
 
 
 """
->>>>>>> 77b94e94855271545388c3d8efe253aabd1214d5
 @app.route('/favicon.ico')
 def favicon():
     return flask.send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
