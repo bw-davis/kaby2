@@ -10,7 +10,6 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'filesystem'
 app.config.update(SECRET_KEY='123456')  
-mail = Mail(app)
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'kabymeetingplanner@gmail.com'
@@ -30,7 +29,7 @@ app.config['MYSQL_DATABASE_DB'] = 'kaby'
 app.config['MYSQL_DATABASE_HOST'] = 'ix.cs.uoregon.edu'
 app.config['MYSQL_DATABASE_PORT'] = 3225
 #session.permanent = True
-app.permanent_session_lifetime = timedelta(minutes=1)
+app.permanent_session_lifetime = timedelta(minutes=10)
 mysql.init_app(app)
 
 
