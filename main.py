@@ -1,12 +1,25 @@
 import flask
 from flask import Flask
-from flask import render_template,redirect,url_for
-from flask import request,session
-from flaskext.mysql import MySQL
+from flask import redirect,url_for
+from flask import session
 from datetime import timedelta
+from flask import Flask, render_template, request
+from flaskext.mysql import MySQL
+from flask_mail import Mail, Message
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'filesystem'
 app.config.update(SECRET_KEY='123456')  
+mail = Mail(app)
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'kabymeetingplanner@gmail.com'
+app.config['MAIL_PASSWORD'] = 'kabykabykaby'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+
+
 mysql = MySQL()
 
 
@@ -95,7 +108,12 @@ def newContact():
 def timePage():
     return render_template('time_picker.html') 
 
+@app.route("/view_meeting/<meeting_id>")
+def view_meeting(meeting_id):
+    app.logger.debug("Entering view_meeting")
 
+    print(meeting_id)  
+    return render_template('view_meeting.html')
 
 
 @app.route('/form_action', methods=['POST'])
@@ -202,6 +220,34 @@ def newmeeting_action():
         conn.commit()
     conn.close()
     return flask.redirect(flask.url_for("home"))
+
+
+
+
+#################
+#
+# Helper functions to be used by Flask 
+#
+#################
+
+
+def send_message(title, body, receivers):
+    '''
+    Send a message using the Kaby Meeting Planner email 
+
+    Args:
+        title: str, the title of the email
+        body:  str, the body of the email
+        receivers: list of str, the emails of recipients. Example: ["owen@uoregon.edu", "andy@gmail.com"]
+    Returns:
+        Nothing
+    '''
+    with app.app_context():
+        msg = Message(title, sender=('Kaby Meeting Planner','kabymeetingplanner@gmail.com'), recipients=receivers)
+        msg.body = body
+        mail.send(msg)
+
+#send_message("Hello", "World", ['yuboz@uoregon.edu'])
 
 #################
 #

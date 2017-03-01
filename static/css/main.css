@@ -1,0 +1,46 @@
+/* Stylesheets shared among all pages */
+
+body {
+    background-color: #eeeeee;
+}
+
+h3 {
+    font-weight:500;
+    font-variant: small-caps;
+    font-family: "Times New Roman", Times, serif;
+}
+
+h2 {
+    font-weight:500;
+    font-variant: small-caps;
+    font-family: "Times New Roman", Times, serif;
+}
+
+h1 {
+    font-weight:bold;
+    color: #ff00bf;
+}
+
+#body-wrapper {
+    background-color: #ffffff;
+    margin-bottom: 0;
+    margin: 0 auto;
+    border-radius: 0; 
+    width: 100%;
+    position: auto;
+    max-width: 1100px;
+}
+
+.scrollable {
+    height: 100px; /* or any value */
+    overflow-y: auto;
+    border-style: solid;
+    border-width: 1px;
+    border-color: grey;
+}
+
+.red li.active a,
+.red li.active a:focus,
+.red li.active a:hover {
+    background-color: lightblue;
+}
