@@ -47,6 +47,19 @@ num_dates=0;
 cur_meeting_id=0;
 length_min=0
 
+def get_meetings():
+	meetings
+	conn = mysql.connect()
+	cur = conn.cursor()
+	query_string="select * from meetings;"
+	cur.execute(query_string)
+	rows= cur.fetchall()
+	for row in rows:
+		if (row[2] != ""): 
+			meetings.append(row[2])
+	conn.close()
+meetings = []
+
 def get_group_leaders():
 	group_leaders 
 	conn = mysql.connect()
@@ -91,7 +104,7 @@ def logout():
 
 @app.route('/home')
 def home():
-    return render_template('index.html') 
+    return render_template('index.html', meetings=meetings) 
 
 @app.route('/newMeeting')
 def newMeeting():
@@ -174,6 +187,7 @@ def login_action():
 #            session['password'] = passwd
 #            print(session['password']+'password')
             conn.close()
+            get_meetings()
             return flask.redirect(flask.url_for("home"))
         else:
             print("row{} does not equal password{}".format(row, passwd))
