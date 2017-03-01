@@ -28,8 +28,7 @@ app.config['MYSQL_DATABASE_PASSWORD'] = 'guest'
 app.config['MYSQL_DATABASE_DB'] = 'kaby'
 app.config['MYSQL_DATABASE_HOST'] = 'ix.cs.uoregon.edu'
 app.config['MYSQL_DATABASE_PORT'] = 3225
-#session.permanent = True
-app.permanent_session_lifetime = timedelta(minutes=1)
+
 mysql.init_app(app)
 
 
@@ -61,6 +60,8 @@ def get_group_leaders():
 @app.before_request
 def before_action():
     print (request.path)
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=1)
     if request.path.find('.png')==-1:
         if not request.path=='/login' and  not request.path=='/login_action':
             if not 'username' in session:
