@@ -32,20 +32,14 @@ app.config['MYSQL_DATABASE_PORT'] = 3225
 mysql.init_app(app)
 
 
-"""
-conn = mysql.connect()
-cur = conn.cursor()
-cur.execute("SELECT * from user")
-rows = cur.fetchall()
-conn.close()
-
-"""
 
 group_leaders = []
 dates = []
 num_dates=0;
 cur_meeting_id=0;
 length_min=0
+meetings = []
+
 
 def get_meetings():
 	meetings
@@ -58,7 +52,6 @@ def get_meetings():
 		if (row[2] != ""): 
 			meetings.append(row[2])
 	conn.close()
-meetings = []
 
 def get_group_leaders():
 	group_leaders 
@@ -70,6 +63,8 @@ def get_group_leaders():
 	for row in rows:
 		group_leaders.append(row[0]);
 	conn.close()
+
+
 @app.before_request
 def before_action():
     print (request.path)
@@ -152,6 +147,9 @@ def form_action():
     cur.execute(query_string)
     cur_meeting_id = cur.lastrowid
     print ("row id : {}".format(cur_meeting_id));
+    leaders_to_meet = request.form.getlist('dd2');
+    for l in leaders_to_meet:
+        print("email{}".format(l));
     conn.commit()
     conn.close()
     return render_template('time_picker.html', dates=dates) 
@@ -231,6 +229,7 @@ def newmeeting_action():
         query_string = "insert into meetings_times_dates (issue_ID, meeting_id, start_time, date, length) values ({}, {}, '{}', '{}', {});".format("NULL", cur_meeting_id, sql_time, sql_date, int(length_min));
         cur.execute(query_string)
         print ("row id : {}".format(cur_meeting_id))
+
         conn.commit()
     conn.close()
     return flask.redirect(flask.url_for("home"))
