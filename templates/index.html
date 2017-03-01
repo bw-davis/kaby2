@@ -63,19 +63,10 @@
 						<div class="form-group row text-center">
 							<div class="col-10">
 				  				<div class="text-left scrollable">
-				  				Group 2(KABY) Meeting 2/20 @ 2pm
-				  				<br>
-				  				Group 1 Meeting 2/20 @ 2:30pm
-				  				<br>
-				  				Group 3 Meeting 2/20 @ 3pm
-				  				<br>
-				  				Group 4 Meeting 2/20 @ 3:30pm
-				  				<br>
-				  				Group 5 Meeting 2/20 @ 4pm
-				  				<br>
-				  				Skype meeting some professor 2/21 @ 6 am
-				  				<br>
-				  				Meeting 3/12 @ 8 am
+									{%for o in meetings%}
+				  				<a href="http://ix.cs.uoregon.edu:5951/view_meeting/69">{{o}}</a>
+								<br>
+									{%endfor%}
 				  				</div>
 						 	</div>
 						</div>
