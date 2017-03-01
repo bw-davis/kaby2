@@ -37,7 +37,7 @@ length_min=0
 meetings = []
 
 def get_meetings():
-    global meetings
+	global meetings
 	conn = mysql.connect()
 	cur = conn.cursor()
 	query_string="select * from meetings;"
