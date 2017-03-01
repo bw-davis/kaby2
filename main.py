@@ -1,13 +1,14 @@
 import flask
-from flask import Flask
-from flask import redirect,url_for
-from flask import session
-from datetime import timedelta
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 from flaskext.mysql import MySQL
 from flask_mail import Mail, Message
 
+from datetime import timedelta
+import uuid
+
 app = Flask(__name__)
+
+# Mail configurations
 app.config['SECRET_KEY'] = 'filesystem'
 app.config.update(SECRET_KEY='123456')  
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -18,19 +19,14 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
-
 mysql = MySQL()
-
-
 # MySQL configurations
 app.config['MYSQL_DATABASE_USER'] = 'guest'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'guest'
 app.config['MYSQL_DATABASE_DB'] = 'kaby'
 app.config['MYSQL_DATABASE_HOST'] = 'ix.cs.uoregon.edu'
 app.config['MYSQL_DATABASE_PORT'] = 3225
-
 mysql.init_app(app)
-
 
 
 group_leaders = []
@@ -40,9 +36,8 @@ cur_meeting_id=0;
 length_min=0
 meetings = []
 
-
 def get_meetings():
-	meetings
+    global meetings
 	conn = mysql.connect()
 	cur = conn.cursor()
 	query_string="select * from meetings;"
@@ -54,7 +49,7 @@ def get_meetings():
 	conn.close()
 
 def get_group_leaders():
-	group_leaders 
+	global group_leaders 
 	conn = mysql.connect()
 	cur = conn.cursor()
 	query_string="select group_leader_email from group_leader;"
@@ -63,7 +58,6 @@ def get_group_leaders():
 	for row in rows:
 		group_leaders.append(row[0]);
 	conn.close()
-
 
 @app.before_request
 def before_action():
@@ -91,6 +85,7 @@ def before_action():
 def login():
     print("login")
     return render_template('login.html') 
+
 @app.route('/logout')	
 def logout():
     print('im in logout')
@@ -106,11 +101,9 @@ def newMeeting():
 	get_group_leaders()
 	return render_template('newMeeting.html',  leaders=group_leaders)
 
-
 @app.route('/newContact')
 def newContact():
     return render_template('newContact.html') 
-
 
 @app.route('/timePage')
 def timePage():
@@ -123,6 +116,9 @@ def view_meeting(meeting_id):
     print(meeting_id)  
     return render_template('view_meeting.html')
 
+#########
+## POST METHODS
+#########
 
 @app.route('/form_action', methods=['POST'])
 def form_action():
@@ -260,7 +256,15 @@ def send_message(title, body, receivers):
         msg.body = body
         mail.send(msg)
 
-#send_message("Hello", "World", ['yuboz@uoregon.edu'])
+def get_uuid():
+    """
+    Creates a unique identifier 
+
+    Returns:
+        str, a unique identifier of the form '32187f9c-9dd3-4ffe-b919-c80ddf90e717'
+    """
+    return str(uuid.uuid4())
+
 
 #################
 #
@@ -268,9 +272,6 @@ def send_message(title, body, receivers):
 #
 #################
 
-
-"""
 @app.route('/favicon.ico')
 def favicon():
     return flask.send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
-"""
