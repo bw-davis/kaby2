@@ -1,10 +1,12 @@
 import flask
 from flask import Flask
-from flask import render_template
-from flask import request
+from flask import render_template,redirect,url_for
+from flask import request,session
 from flaskext.mysql import MySQL
+from datetime import timedelta
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = 'filesystem'
+app.config.update(SECRET_KEY='123456')  
 mysql = MySQL()
 
 
@@ -14,6 +16,8 @@ app.config['MYSQL_DATABASE_PASSWORD'] = 'guest'
 app.config['MYSQL_DATABASE_DB'] = 'kaby'
 app.config['MYSQL_DATABASE_HOST'] = 'ix.cs.uoregon.edu'
 app.config['MYSQL_DATABASE_PORT'] = 3225
+#session.permanent = True
+app.permanent_session_lifetime = timedelta(minutes=1)
 mysql.init_app(app)
 
 
@@ -42,13 +46,35 @@ def get_group_leaders():
 	for row in rows:
 		group_leaders.append(row[0]);
 	conn.close()
+@app.before_request
+def before_action():
+    print (request.path)
+    if request.path.find('.png')==-1:
+        if not request.path=='/login' and  not request.path=='/login_action':
+            if not 'username' in session:
+                print('not in session!!')
+                session['newurl']=request.path
+            #        if not 'username' in session and not 'password' in session:
+            #            print(session['username'])
+            #            print('*****')
+            #            print(session['username'])
+            #            session['newurl']=request.path
+                print('you should go to login')
+                return flask.redirect(flask.url_for("login"))
+            #    return
+            else:
+                print('in session!!')
 
 @app.route('/')
 @app.route('/login')
 def login():
+    print("login")
     return render_template('login.html') 
-	
-
+@app.route('/logout')	
+def logout():
+    print('im in logout')
+    session.clear() 
+    return flask.redirect(flask.url_for("login"))
 
 @app.route('/home')
 def home():
@@ -102,22 +128,39 @@ def form_action():
 
 @app.route('/login_action', methods=['POST'])
 def login_action():
-	name = request.form.get('user_name')
-	passwd = "{}".format(request.form.get('password'))
-	conn =  mysql.connect()
-	cur = conn.cursor()
-	query_string = "SELECT password from user where fname='{}'".format(name)
-	cur.execute(query_string)
-	rows = cur.fetchall()
-	for row in rows:
-		if (row[0] == passwd): 
-			print("passowords Match")
-			conn.close()
-			return flask.redirect(flask.url_for("home"))
-		else:
-			print("row{} does not equal password{}".format(row, passwd))
-	conn.close()
-	return flask.redirect(flask.url_for("login"))
+    print("I'm in login_action")
+    name = request.form.get('user_name')
+    passwd = "{}".format(request.form.get('password'))
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    query_string = "SELECT password from user where fname='{}'".format(name)
+    cur.execute(query_string)
+    rows = cur.fetchall()
+    for row in rows:
+        if (row[0]==passwd):
+            print("passowords Match")
+            print(request.form.get('user_name'))
+            print('name')
+            session['username'] = name
+            #if 'newurl' in session:
+            #    newurl = session['newurl']
+            #    return flask.redirect(flask.url_for('login_action'))
+#            testsession = session['username']
+#            print('testsession:')
+            if 'username' in session:
+                print("User is  here")
+            else:
+                print("not here")
+#            session['username'] = name
+#            print(session['username'] + "username")
+#            session['password'] = passwd
+#            print(session['password']+'password')
+            conn.close()
+            return flask.redirect(flask.url_for("home"))
+        else:
+            print("row{} does not equal password{}".format(row, passwd))
+    conn.close()
+    return flask.redirect(flask.url_for("login"))
 
 @app.route('/contact_action', methods=['POST'])
 def contact_action():
@@ -160,15 +203,11 @@ def newmeeting_action():
     conn.close()
     return flask.redirect(flask.url_for("home"))
 
-
-
 #################
 #
 # Favicon function rendering
 #
 #################
-
-  
 
 
 """
