@@ -5,6 +5,7 @@ from flask_mail import Mail, Message
 
 from datetime import timedelta
 import uuid
+import os
 
 app = Flask(__name__)
 
