@@ -132,7 +132,7 @@ def respond(meeting_id):
     print(meeting_id)  
     #return render_template('respond.html')
     #This is dummy information for testing purposes
-    dates=get_dts(meeting_id)
+    dates=get_dts(meeting_id, meeting_id)
     response_meeting=meeting_id;
     return render_template('respond.html', names=get_leaders_for_meetingID(meeting_id),
             dts=dates)
@@ -265,7 +265,6 @@ def respond_meeting():
     print("Available times: ", available_times)
     user_id= group_leader_email_to_id(user_name);
     print("\n\n user name {} to user id {}".format(user_name, user_id))
-    print("resp id {}".format(response_meeting))
 
     insert_user_response(user_id ,response_meeting, available_times)
     return flask.redirect(flask.url_for("thanks"))
@@ -407,22 +406,10 @@ def group_leader_email_to_id(group_leader_email):
     conn.close()
     return leader[0];
 
-def get_dt_id(meeting_id, meeting_date):
-    print("id {} date {}".format(meeting_id, meeting_date));
-    query_string = "select * from dates_times where meeting_date='{}' and meeting_id={};".format(meeting_date, meeting_id)
-    conn =  mysql.connect()
-    cur = conn.cursor()
-    cur.execute(query_string)
-    leader = cur.fetchone()
-    conn.close()
-    return leader;
-
 def insert_user_response(group_leader_id, meeting_id, available_times):
     for a in available_times:
         year, day, month, stime, etime = a.split("-")
-        m_date = '{}-{}-{}'.format(year,day,month)
-        print("date {} stime {} etime{}".format(m_date, stime, etime))
-        print("dt_id{} => ".format(get_dt_id(meeting_id,m_date)))
+        date = '{}-{}-{}'.format(year,day,month)
 	#query_string = "insert into response (dt_id, start_time, end_time, group_leader_id) values ({},{},{},{});",format(meeting_id, stime, etime, grop_leader_id))
 	#conn =  mysql.connect()
 	#cur = conn.cursor()
