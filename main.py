@@ -127,8 +127,16 @@ def respond(meeting_id):
     app.logger.debug("Entering respond")
 
     print(meeting_id)  
-    return render_template('respond.html')
+    #return render_template('respond.html')
+    #This is dummy information for testing purposes
+    return render_template('respond.html', names=["Alex", "Andy", "Yubo", "Andrew"],
+            dts=[("02/22","7:00","7:30"),
+                 ("02/23", "12:00", "12:30"),
+                 ("02/24", "14:00", "14:30")])
 
+@app.route("/thanks")
+def thanks():
+    return render_template('thanks.html')
 
 
 #########
@@ -243,6 +251,16 @@ def newmeeting_action():
     return flask.redirect(flask.url_for("home"))
 
 
+@app.route('/respond_meeting', methods=['POST'])
+def respond_meeting():
+    user_name = request.form.get('user_name')
+    available_times = request.form.getlist('available_times')
+    available_times = [x.encode('ascii','ignore') for x in available_times] #convert from unicode to str
+
+    print("Username: " + user_name)
+    print("Available times: ", available_times)
+
+    return flask.redirect(flask.url_for("thanks"))
 
 
 #################
