@@ -119,6 +119,7 @@ def view_meeting(meeting_id):
     app.logger.debug("Entering view_meeting")
 
     print(meeting_id)  
+    print("leader {}".format(get_leaders_for_meetingID(meeting_id)))
     return render_template('view_meeting.html')
 
 @app.route("/respond/<meeting_id>")
@@ -127,6 +128,8 @@ def respond(meeting_id):
 
     print(meeting_id)  
     return render_template('respond.html')
+
+
 
 #########
 ## POST METHODS
@@ -299,7 +302,7 @@ def set_response(leader):
     leader_to_add = p[0];
     print("\n\n just got {} \n\n".format(leader_to_add));
     conn2.close();
-    add_to_respond_meeting(cur_meeting_id, leader_to_add);
+    add_to_respond_meeting( leader_to_add,cur_meeting_id);
 
 
 def insert_meeting(loc, desc, length_min, uuid_url):
@@ -311,6 +314,47 @@ def insert_meeting(loc, desc, length_min, uuid_url):
 	cur_meeting_id = cur.lastrowid
 	conn.commit()
 	conn.close()
+
+
+def get_leaders_for_meetingID(uuid_url):
+    #uuid_url to meeeting id
+    query_string = "select * from meetings where uuid='{}'".format(uuid_url)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    all_attendees=[]
+    cur.execute(query_string)
+    meeting = cur.fetchone()
+    meeting_id = meeting[0];
+    #print(meeting_id)
+    all_attendees = all_contacts_id_for_meeting(meeting_id)
+    conn.close()
+    return all_attendees
+
+def all_contacts_id_for_meeting(meeting_id):
+    query_string = "select * from respond_meeting where issue_ID={}".format(meeting_id)
+    all_attendees=[];
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    attendees = cur.fetchall()
+    #print("attendees")
+    for a in attendees:
+    #    print(a);
+        all_attendees.append(get_contacts_for_meeting(a[1]))
+        
+    conn.close()
+    return all_attendees
+
+def get_contacts_for_meeting(group_leader_id):
+    query_string = "select * from group_leader where group_leader_id={};".format(group_leader_id)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    attendees = cur.fetchone()
+    #print(attendees[1]);
+    conn.close()
+    return attendees[1];
+
 
 
 #################
