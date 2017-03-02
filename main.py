@@ -45,11 +45,12 @@ def get_meetings():
 	rows= cur.fetchall()
 	for row in rows:
 		if (row[2] != ""): 
-			meetings.append(row[2])
+			meetings.append((row[2], row[4]))
 	conn.close()
 
 def get_group_leaders():
 	global group_leaders 
+	group_leaders=[]
 	conn = mysql.connect()
 	cur = conn.cursor()
 	query_string="select group_leader_email from group_leader;"
@@ -139,7 +140,7 @@ def form_action():
     print("length : {}".format(length_min));
     conn =  mysql.connect()
     cur = conn.cursor()
-    query_string = "insert into meetings (meeting_id, location, description) values ({}, '{}', '{}')".format("Null",loc, desc)
+    query_string = "insert into meetings (meeting_id, location, description, length, uuid) values ({}, '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, get_uuid())
     cur.execute(query_string)
     cur_meeting_id = cur.lastrowid
     print ("row id : {}".format(cur_meeting_id));
@@ -167,19 +168,6 @@ def login_action():
             print(request.form.get('user_name'))
             print('name')
             session['username'] = name
-            #if 'newurl' in session:
-            #    newurl = session['newurl']
-            #    return flask.redirect(flask.url_for('login_action'))
-#            testsession = session['username']
-#            print('testsession:')
-            if 'username' in session:
-                print("User is  here")
-            else:
-                print("not here")
-#            session['username'] = name
-#            print(session['username'] + "username")
-#            session['password'] = passwd
-#            print(session['password']+'password')
             conn.close()
             get_meetings()
             return flask.redirect(flask.url_for("home"))
@@ -222,11 +210,17 @@ def newmeeting_action():
         time = request.form.get(name)
         sql_time='{}:00:00'.format(time)
         print (sql_time) 
-        query_string = "insert into meetings_times_dates (issue_ID, meeting_id, start_time, date, length) values ({}, {}, '{}', '{}', {});".format("NULL", cur_meeting_id, sql_time, sql_date, int(length_min));
-        cur.execute(query_string)
-        print ("row id : {}".format(cur_meeting_id))
-
-        conn.commit()
+        #query_string = "insert into meetings_times_dates (issue_ID, meeting_id, start_time, date, length) values ({}, {}, '{}', '{}', {});".format("NULL", cur_meeting_id, sql_time, sql_date, int(length_min));
+        time_ranges = time.split(',');
+        for t in time_ranges:
+            start_time, end_time = t.split('-');
+            print("start {} end {}".format(start_time, end_time)) 
+            sql_start_time = '{}:00:00'.format(start_time) 
+            sql_end_time= '{}:00:00'.format(end_time) 
+            query_string = "INSERT INTO `kaby`.`dates_times` (`dt_id`, `meeting_id`, `start_time`, `end_time`, `meeting_date`) VALUES ({}, {}, '{}', '{}', '{}');".format("NULL", cur_meeting_id, sql_start_time.strip('0'), sql_end_time , sql_date);
+            cur.execute(query_string)
+            print ("row id : {}".format(cur_meeting_id))
+            conn.commit()
     conn.close()
     return flask.redirect(flask.url_for("home"))
 

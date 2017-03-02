@@ -63,8 +63,8 @@
 						<div class="form-group row text-center">
 							<div class="col-10">
 				  				<div class="text-left scrollable">
-									{%for o in meetings%}
-				  				<a href="http://ix.cs.uoregon.edu:5951/view_meeting/69">{{o}}</a>
+									{%for desc, href in meetings%}
+				  				<a href="http://ix.cs.uoregon.edu:5951/view_meeting/{{href}}">{{desc}}</a>
 								<br>
 									{%endfor%}
 				  				</div>
