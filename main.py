@@ -35,6 +35,8 @@ num_dates=0;
 cur_meeting_id=0;
 length_min=0
 meetings = []
+email_list=[]
+uuid_emil="";
 
 def get_meetings():
 	global meetings
@@ -127,6 +129,9 @@ def form_action():
     global num_dates
     global cur_meeting_id;
     global length_min
+    global email_list
+    global uuid_url
+    email_list=[]
     date = request.form.get('date')
     dates = date.split(",");
     num_dates = len(dates)
@@ -140,13 +145,15 @@ def form_action():
     print("length : {}".format(length_min));
     conn =  mysql.connect()
     cur = conn.cursor()
-    query_string = "insert into meetings (meeting_id, location, description, length, uuid) values ({}, '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, get_uuid())
+    uuid_url = get_uuid()
+    query_string = "insert into meetings (meeting_id, location, description, length, uuid) values ({}, '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url)
     cur.execute(query_string)
     cur_meeting_id = cur.lastrowid
     print ("row id : {}".format(cur_meeting_id));
     leaders_to_meet = request.form.getlist('dd2');
     for l in leaders_to_meet:
-        print("email{}".format(l));
+        print("email {}".format(l));
+        email_list.append(l);
     conn.commit()
     conn.close()
     return render_template('time_picker.html', dates=dates) 
@@ -200,6 +207,8 @@ def newmeeting_action():
     global length_min
     global cur_meeting_id
     global dates
+    global email_list
+    global uuid_url
     conn =  mysql.connect()
     cur = conn.cursor()
     for i in range(num_dates):
@@ -222,6 +231,8 @@ def newmeeting_action():
             print ("row id : {}".format(cur_meeting_id))
             conn.commit()
     conn.close()
+    link = "ix.cs.uoregon.edu:5951/respond/" + uuid_url
+    send_message("You've been invited", link, email_list);
     return flask.redirect(flask.url_for("home"))
 
 
