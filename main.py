@@ -119,6 +119,13 @@ def view_meeting(meeting_id):
     print(meeting_id)  
     return render_template('view_meeting.html')
 
+@app.route("/respond/<meeting_id>")
+def view_meeting(meeting_id):
+    app.logger.debug("Entering respond")
+
+    print(meeting_id)  
+    return render_template('respond.html')
+
 #########
 ## POST METHODS
 #########
