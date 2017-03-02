@@ -29,6 +29,80 @@
 </head>
 
 <body>
-    Hello world.
+<div class="container" id="body-wrapper">
+    <!-- HEADER -->
+	<div class="container text-center">
+		<div class="row content">
+			<div class="col-sm-5 text-left">
+				<h1> Kaby Meeting Planner </h1>
+			</div>
+			<div class="col-sm-5 text-right">
+			<br>
+			<br>
+			</div>
+		</div>
+	</div>
+	<hr>
+	<ul class="nav nav-pills red">
+			<li role="presentation" class="active"><a href="#">Home</a></li>
+		    <li role="presentation"><a href="newMeeting">New Meeting</a></li>
+		    <li role="presentation"><a href="newContact">New Contacts</a></li>
+		    <li role="presentation"><a href="logout">Log out</a></li>
+	</ul>
+	<hr>
+	<br>
+	<br>
+    <!-- /HEADER -->
+
+    <div class="form-group row text-center" >                                                      
+        <label for="mName" class="col-sm-2 col-form-label">Meeting Name</label>                    
+        <div class="col-sm-10">                                                                    
+            <label class="col-sm-2 col-form-label" readonly> {{ title }}</label>   
+        </div>                                                                                     
+    </div>     
+    <br>
+    <div class="form-group row text-center" >                                                      
+        <label for="mName" class="col-sm-2 col-form-label">Location</label>                    
+        <div class="col-sm-10">                                                                    
+            <label class="col-sm-2 col-form-label" readonly> {{ location }}</label>   
+        </div>                                                                                     
+    </div>     
+    <br>
+    <div class="form-group row text-center" >                                                      
+        <label for="mName" class="col-sm-2 col-form-label">Description</label>                    
+        <div class="col-sm-10">                                                                    
+            <label class="col-sm-2 col-form-label" readonly> {{ desc }}</label>   
+        </div>                                                                                     
+    </div>     
+    <hr>
+    <div class="form-group row text-center" >                                                      
+        <!-- TODO: This looks really bad. Don't know why it idents. -->
+        <label for="mName" class="col-sm-2 col-form-label">Responders</label>                    
+        <br>
+        {% for name, times in responders %}
+                <div class="col-sm-10">                                                                    
+                    <label class="col-sm-2 col-form-label"><h4>{{ name }}</h4></label>
+                </div>
+            {% for date, st, et in times %}
+                <div class="col-sm-10">                                                                    
+                    <label class="col-sm-2 col-form-label">{{ date }} {{ st }} - {{ et }}</label>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        <div class="col-sm-10">                                                                    
+            <label class="col-sm-2 col-form-label" readonly> {{ desc }}</label>   
+        </div>                                                                                     
+    </div>     
+    <br>
+    <div class="form-group row text-center" >                                                      
+        <label for="mName" class="col-sm-2 col-form-label">Haven't responded</label>                    
+        <br>
+        {% for name in not_responders %}
+        <div class="col-sm-10">                                                                    
+            <label class="col-sm-2 col-form-label">{{ name }}</label>
+        </div>
+        {% endfor %}
+    </div>     
+</div>
 </body>
 </html>

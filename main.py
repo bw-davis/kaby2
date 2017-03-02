@@ -119,8 +119,12 @@ def view_meeting(meeting_id):
     app.logger.debug("Entering view_meeting")
 
     print(meeting_id)  
-    print("leader {}".format(get_leaders_for_meetingID(meeting_id)))
-    return render_template('view_meeting.html')
+    #print("leader {}".format(get_leaders_for_meetingID(meeting_id)))
+    return render_template('view_meeting.html', title="CIS 422 Debugging Meeting",
+                            location="Deschutes 100", not_responders=["Alex", "Andrew"],
+                            responders = [("Don", [("02/22", "07:00", "07:30"),
+                                                   ("02/23", "12:00", "12:30")]),
+                                          ("Yubo", [("02/24", "13:00", "13:30")])])
 
 @app.route("/respond/<meeting_id>")
 def respond(meeting_id):
