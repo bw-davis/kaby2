@@ -20,8 +20,9 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
-mysql = MySQL()
+
 # MySQL configurations
+mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = 'guest'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'guest'
 app.config['MYSQL_DATABASE_DB'] = 'kaby'
@@ -29,7 +30,7 @@ app.config['MYSQL_DATABASE_HOST'] = 'ix.cs.uoregon.edu'
 app.config['MYSQL_DATABASE_PORT'] = 3225
 mysql.init_app(app)
 
-
+#Global variables
 group_leaders = []
 dates = []
 num_dates=0;
@@ -37,7 +38,7 @@ cur_meeting_id=0;
 length_min=0
 meetings = []
 email_list=[]
-uuid_emil="";
+uuid_url="";
 
 def get_meetings():
 	global meetings
@@ -151,19 +152,14 @@ def form_action():
     loc= request.form.get('loc')
     length_min= request.form.get('meeting_len')
     print("length : {}".format(length_min));
-    conn =  mysql.connect()
-    cur = conn.cursor()
     uuid_url = get_uuid()
-    query_string = "insert into meetings (meeting_id, location, description, length, uuid) values ({}, '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url)
-    cur.execute(query_string)
-    cur_meeting_id = cur.lastrowid
+    insert_meeting(loc, desc, length_min, uuid_url)
     print ("row id : {}".format(cur_meeting_id));
     leaders_to_meet = request.form.getlist('dd2');
     for l in leaders_to_meet:
         print("email {}".format(l));
         email_list.append(l);
-    conn.commit()
-    conn.close()
+        set_response(l);
     return render_template('time_picker.html', dates=dates) 
 
 
@@ -277,6 +273,44 @@ def get_uuid():
         str, a unique identifier of the form '32187f9c-9dd3-4ffe-b919-c80ddf90e717'
     """
     return str(uuid.uuid4())
+
+
+
+
+#################
+# MySQL Helper functions
+################
+
+def add_to_respond_meeting(leader_id, meeting_id):
+	print("adding to respond table")
+	query_add_respond = "insert into respond_meeting (issue_ID, group_id) values ({},{})".format(meeting_id, leader_id);
+	conn = mysql.connect()
+	cur = conn.cursor()
+	cur.execute(query_add_respond);
+	conn.commit()
+	conn.close()
+
+def set_response(leader):
+    conn2 =  mysql.connect()
+    cur2 = conn2.cursor()
+    query_string_userID = "SELECT * FROM group_leader where group_leader_email='{}'".format(leader);
+    cur2.execute(query_string_userID)
+    p = cur2.fetchone()
+    leader_to_add = p[0];
+    print("\n\n just got {} \n\n".format(leader_to_add));
+    conn2.close();
+    add_to_respond_meeting(cur_meeting_id, leader_to_add);
+
+
+def insert_meeting(loc, desc, length_min, uuid_url):
+	global cur_meeting_id 
+	query_string = "insert into meetings (meeting_id, location, description, length, uuid) values ({}, '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url)
+	conn =  mysql.connect()
+	cur = conn.cursor()
+	cur.execute(query_string)
+	cur_meeting_id = cur.lastrowid
+	conn.commit()
+	conn.close()
 
 
 #################
