@@ -120,7 +120,7 @@ def view_meeting(meeting_id):
     return render_template('view_meeting.html')
 
 @app.route("/respond/<meeting_id>")
-def view_meeting(meeting_id):
+def respond(meeting_id):
     app.logger.debug("Entering respond")
 
     print(meeting_id)  
