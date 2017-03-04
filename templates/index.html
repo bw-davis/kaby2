@@ -75,22 +75,26 @@
 
 				</div>
 				</div>
-				<div class="row content">
-					<div class="col-sm-1 text-left">
-						</div>
-					    <div class="col-sm-9 text-left">
-								<h3>Past meetings</h3>
-								<div class="form-group row text-center">
-									<div class="col-10">
-						  				<div class="scrollable">
-				  						</div>
-								 	</div>
-								</div>
-						</div>
+		<div class="row content">
+			<div class="col-sm-1 text-left">
 				</div>
-		  </div>
-		 <br>
-		 <br>
+			    <div class="col-sm-9 text-left">
+						<h3>past meetings</h3>
+						<div class="form-group row text-center">
+							<div class="col-10">
+				  				<div class="text-left scrollable">
+									{%for desc, href in past_meetings%}
+				  				<a href="http://ix.cs.uoregon.edu:5951/view_meeting/{{href}}">{{desc}}</a>
+								<br>
+									{%endfor%}
+				  				</div>
+						 	</div>
+						</div>
+
+
+
+				</div>
+				</div>
   </div>
   <br>
   <br>
