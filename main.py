@@ -39,6 +39,7 @@ num_dates=0;
 cur_meeting_id=0;
 length_min=0
 meetings = []
+past_meetings=[]
 email_list=[]
 uuid_url="";
 response_meeting="";
@@ -102,7 +103,7 @@ def logout():
 
 @app.route('/home')
 def home():
-    return render_template('index.html', meetings=meetings) 
+    return render_template('index.html', meetings=meetings, past_meetings=past_meetings) 
 
 @app.route('/newMeeting')
 def newMeeting():
@@ -123,15 +124,15 @@ def view_meeting(meeting_id):
 
     print(meeting_id)  
     #print("leader {}".format(get_leaders_for_meetingID(meeting_id)))
-    ''' # Dummy info for development
+     # Dummy info for development
     return render_template('view_meeting.html', title="CIS 422 Debugging Meeting",
                             location="Deschutes 100", not_responders=["Alex", "Andrew"],
                             responders = [("Don", [("02/22", "07:00", "07:30"),
                                                    ("02/23", "12:00", "12:30")]),
                                           ("Yubo", [("02/24", "13:00", "13:30")])])
-    '''
+    
     print("dts {}".format(get_dts(meeting_id)))
-    return render_template('view_meeting.html')
+    #return render_template('view_meeting.html')
 
 @app.route("/respond/<meeting_id>")
 def respond(meeting_id):
@@ -202,7 +203,8 @@ def login_action():
             print('name')
             session['username'] = name
             conn.close()
-            get_meetings()
+            get_upcoming_meetings()
+            get_past_meetings()
             return flask.redirect(flask.url_for("home"))
         else:
             print("row{} does not equal password{}".format(row, passwd))
@@ -259,7 +261,8 @@ def newmeeting_action():
     conn.close()
     link = "ix.cs.uoregon.edu:5951/respond/" + uuid_url
     send_message("You've been invited", link, email_list);
-    return flask.redirect(flask.url_for("home"))
+    #return flask.redirect(flask.url_for("home"))
+    return render_template('index.html', meetings=meetings) 
 
 
 @app.route('/respond_meeting', methods=['POST'])
@@ -441,6 +444,34 @@ def insert_user_response(group_leader_id, meeting_id, available_times):
 	#conn.commit()
 	#conn.close()
 
+def get_upcoming_meetings():
+    query_string ="select * from dates_times join meetings using( meeting_id) where meeting_date >= cast(now() as date);"
+    global meetings 
+    meetings=[]
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    rows= cur.fetchall()
+    for row in rows:
+        print("\n\n row {} \n\n".format(row));
+        if (row[2] != ""): 
+            meetings.append((row[6], row[8]))
+    conn.close();
+
+
+def get_past_meetings():
+    query_string ="select * from dates_times join meetings using( meeting_id) where meeting_date < cast(now() as date);"
+    global past_meetings 
+    past_meetings=[]
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    rows= cur.fetchall()
+    for row in rows:
+        print("\n\n row {} \n\n".format(row));
+        if (row[2] != ""): 
+            past_meetings.append((row[6], row[8]))
+    conn.close();
 
 
 #################
