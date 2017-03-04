@@ -123,6 +123,13 @@ def view_meeting(meeting_id):
 
     print(meeting_id)  
     #print("leader {}".format(get_leaders_for_meetingID(meeting_id)))
+    ''' # Dummy info for development
+    return render_template('view_meeting.html', title="CIS 422 Debugging Meeting",
+                            location="Deschutes 100", not_responders=["Alex", "Andrew"],
+                            responders = [("Don", [("02/22", "07:00", "07:30"),
+                                                   ("02/23", "12:00", "12:30")]),
+                                          ("Yubo", [("02/24", "13:00", "13:30")])])
+    '''
     print("dts {}".format(get_dts(meeting_id)))
     return render_template('view_meeting.html')
 
