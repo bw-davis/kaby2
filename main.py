@@ -41,7 +41,7 @@ length_min=0
 meetings = []
 email_list=[]
 uuid_url="";
-response_meeting=0;
+response_meeting="";
 
 def get_meetings():
 	global meetings
@@ -134,6 +134,7 @@ def respond(meeting_id):
     #This is dummy information for testing purposes
     dates=get_dts(meeting_id)
     response_meeting=meeting_id;
+    print("\n\nresp id1 {}\n\n".format(response_meeting))
     return render_template('respond.html', names=get_leaders_for_meetingID(meeting_id),
             dts=dates)
 
@@ -307,7 +308,7 @@ def get_uuid():
 
 
 #################
-# MySQL Helper functions
+# MySQL query functions
 ################
 
 def add_to_respond_meeting(leader_id, meeting_id):
@@ -318,6 +319,7 @@ def add_to_respond_meeting(leader_id, meeting_id):
 	cur.execute(query_add_respond);
 	conn.commit()
 	conn.close()
+
 
 def set_response(leader):
     conn2 =  mysql.connect()
@@ -409,12 +411,13 @@ def group_leader_email_to_id(group_leader_email):
 
 def get_dt_id(meeting_id, meeting_date):
     print("id {} date {}".format(meeting_id, meeting_date));
-    query_string = "select * from dates_times where meeting_date='{}' and meeting_id={};".format(meeting_date, meeting_id)
+    query_string = "select * from meetings join dates_times using (meeting_id) where uuid='{}' and meeting_date='{}'".format(meeting_id, meeting_date)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
     leader = cur.fetchone()
     conn.close()
+    print("\n\n leader = {} \n\n".format(leader))
     return leader;
 
 def insert_user_response(group_leader_id, meeting_id, available_times):
@@ -422,9 +425,9 @@ def insert_user_response(group_leader_id, meeting_id, available_times):
         year, day, month, stime, etime = a.split("-")
         m_date = '{}-{}-{}'.format(year,day,month)
         print("date {} stime {} etime{}".format(m_date, stime, etime))
-        print("dt_id{} => ".format(get_dt_id(meeting_id,m_date)))
+        print("dt_id => {}".format(get_dt_id(meeting_id,m_date)))
 	#query_string = "insert into response (dt_id, start_time, end_time, group_leader_id) values ({},{},{},{});",format(meeting_id, stime, etime, grop_leader_id))
-	#conn =  mysql.connect()
+	#conn =  mysql.connect(
 	#cur = conn.cursor()
 	#cur.execute(query_string)
 	#cur_meeting_id = cur.lastrowid
