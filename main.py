@@ -1,8 +1,8 @@
 import flask
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flaskext.mysql import MySQL
 from flask_mail import Mail, Message
-
+import re
 from datetime import timedelta
 import uuid
 import os
@@ -71,6 +71,14 @@ def get_group_leaders():
 @app.before_request
 def before_action():
     print (request.path)
+    #page = True
+    #if request.path=='/login':
+    #    page = False
+    #elif request.path == '/login_action':
+    #    page = False
+    #elif page = re.match("([0-9A-z]+)([@]+)([0-9A-z]+)([.]+)([0-9A-z]+)", email) != None
+
+    #elif page = re.match("(\Ahttp://ix.cs.uoregon.edu:5951/respond/)", email) != None
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=10)
     if request.path.find('.png')==-1:
@@ -213,20 +221,26 @@ def login_action():
 
 @app.route('/contact_action', methods=['POST'])
 def contact_action():
-	group_name = request.form.get('group_name')
-	email_address = request.form.get('email_address')
-	print("group_name");
-	print(group_name);
-	print("email_address:");
-	print(email_address);
-	conn =  mysql.connect()
-	cur = conn.cursor()
-	query_string = "INSERT INTO `kaby`.`group_leader` (`group_leader_email`, `group_name`) VALUES ('{}', '{}');".format(email_address,group_name)
-	print(query_string)
-	cur.execute(query_string)
-	conn.commit()
-	conn.close()
-	return flask.redirect(flask.url_for("home"))
+    #flash('You did someting here')
+    group_name = request.form.get('group_name')
+    email_address = request.form.get('email_address')
+    print("group_name");
+    print(group_name);
+    print("email_address:");
+    print(email_address);
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    query_string = "INSERT INTO `kaby`.`group_leader` (`group_leader_email`, `group_name`) VALUES ('{}', '{}');".format(email_address,group_name)
+    print(query_string)
+    cur.execute(query_string)
+    conn.commit()
+    conn.close()
+    return flask.redirect(flask.url_for("home"))
+    #return flask.redirect(flask.url_for("newContact"))
+    #return render_template('newContact.html') 
+
+
+
 
 @app.route('/newmeeting_action', methods=['POST'])
 def newmeeting_action():
