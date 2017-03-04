@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KABY meeting planner</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- for FF, Chrome, Opera 
+  <link rel="icon" type="image/png" href="images/kaby.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="images/kaby.png" sizes="32x32">
+	-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <!-- Kaby Stylesheet -->
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <!-- Custom stylesheet for index.html -->
+  <style>
+    #body-wrapper {
+        background-color: #ffffff;
+        margin-bottom: 0;
+        margin: 0 auto;
+        border-radius: 0; 
+        width: 100%;
+        position: auto;
+        max-width: 1100px;
+    }
+  </style>
+</head>
+<!--
+    Hello, please respond to this invitation. 
+    TODO:
+    - Display data
+    - Give user option to select who they are 
+    - Receive user data
+    - Redirect to "Thank you, your information has been processed"
+-->
+<body>
+
+    <!-- HEADER -->
+<br>
+<div class="container" id="body-wrapper">
+	<div class="container text-center">
+		<div class="row content">
+			<div class="col-sm-5 text-left">
+				<h1> Kaby Meeting Planner </h1>
+			</div>
+			<div class="col-sm-5 text-right">
+			<br>
+			<br>
+			</div>
+		</div>
+	</div>
+	<hr>
+	<hr>
+    <!-- /HEADER -->
+
+    <form action="/respond_meeting" method="post">
+        <div class="container text-center">
+            <div class="row content">
+			    <div class="col-sm-9 text-left">
+                    <h2>You have been invited to a meeting</h2>
+                    <h3>Who are you?</h3>
+                    {% for name in names %}
+                        <input type="radio" class="user_name" name="user_name" value="{{ name }}" id="{{ name }}">
+                        <label for="{{ name }}"> {{ name }} </label>  
+                        <br>
+                    {% endfor %}
+                    <h3>When are you available?</h3>
+                    {% for date, st, et in dts %}
+                        <h4>{{ date }}</h4>
+                        <input type="checkbox" class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}" id="{{loop.index}}">
+                        <label for="{{loop.index}}"> {{ st }} - {{ et }} </label>  
+                        <br>
+                    {% endfor %}
+                    <br>
+                    <input type="submit" class="btn btn-success" id="submit_times" value="I'm available these times">
+                </div>
+            </div>
+        </div>
+    </form>
+  <br>
+  <br>
+</body>
+</html>
