@@ -11,10 +11,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<<<<<<< HEAD
-  <!-- Include jQuery -->
-=======
->>>>>>> e49dc92217ca924af2fd233e25172643edb9ceb5
 
 <!-- Include Date Range Picker -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
@@ -25,7 +21,6 @@
 
 </head>
 <body>
-
 
 <br>
 
@@ -53,19 +48,19 @@
 	<br>
 
 		<form action = "contact_action"   method="post">
-		<div class="form-group row text-center" >
+		<div class="form-group row text-left" >
 		 	<label for="example-text-input" class="col-sm-2 col-form-label">Group name</label>
 			<div class="col-sm-7">
 				<input class="form-control" type="text" id = "John" name="group_name" placeholder="Group name" id="example-text-input">
 		 	</div>
-		 	<label  class="col-sm-2 col-form-label" id = "lb1" style="display:none">Please enter a group name!</label>
+		 	<label  class="col-sm-3 col-form-label text-left" id = "lb1" style="display:none">Please enter a group name!</label>
 		</div>
-		<div class="form-group row text-center">
-		 	<label for="date" class="col-sm-2 col-form-label">Email address</label>
-			<div class="col-sm-4">
+		<div class="form-group row text-left">
+		 	<label for="date" class="col-sm-2 col-form-label text-left">Email address</label>
+			<div class="col-sm-7">
 				<input class="form-control" id="Exit" name="email_address" placeholder="example@uoregon.com" type="text"/>
 		 	</div>
-		 	<label  class="col-sm-2 col-form-label" id = "lb2" style="display:none">Please enter a valid email address!
+		 	<label  class="col-sm-3 col-form-label text-left" id = "lb2" style="display:none">Please enter a valid email address!
 		 	</label>
 		</div>
 		
@@ -97,7 +92,7 @@
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <input type="submit" class="btn btn-primary"></button>
+		        <input type="submit" class="btn btn-primary"></input>
 		      </div>
 		    </div>
 		  </div>
@@ -108,6 +103,7 @@
   </div>
   <br>
   <br>
+
 
 <script>
 
@@ -123,6 +119,7 @@ $(document).ready(function(){
     	var label2 = document.getElementById("lb2");
     	var g_name =document.getElementById("John").value;
     	var g_email=document.getElementById("Exit").value;
+    	alert("aa")
     	if(re_name.exec(g_name)&&re_email.exec(g_email)){
     		$("#myModal").modal();
     	}
