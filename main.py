@@ -348,7 +348,7 @@ def get_uuid():
 ################
 
 def add_to_respond_meeting(leader_id, meeting_id):
-	print("adding to respond table")
+	print("adding to respond_meeting table")
 	query_add_respond = "insert into respond_meeting (issue_ID, group_id) values ({},{})".format(meeting_id, leader_id);
 	conn = mysql.connect()
 	cur = conn.cursor()

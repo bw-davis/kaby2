@@ -61,6 +61,9 @@
             multidate: true,
         })
     })
+
+
+
 </script>
 
 <!-- Kaby Stylesheet -->
@@ -94,51 +97,58 @@
 		  <br/>
 		  <br>
 
-		<form action="form_action" method="post">
-		<div class="form-group row text-center" >
+		<form action="form_action" name= "myform" method="post">
+		<div class="form-group row text-left" >
 		 	<label for="mName" class="col-sm-2 col-form-label">Meeting Name</label>
-			<div class="col-sm-10">
+			<div class="col-sm-7">
 				<input class="form-control" type="text" placeholder="Meeting name" id="mName" name="mName">
 		 	</div>
-		</div>
-		<div class="form-group row text-center" >
-		 	<label for="loc" class="col-sm-2 col-form-label">Meeting Location</label>
-			<div class="col-sm-10">
-				<input class="form-control" type="text" placeholder="Meeting location" id="desc" name="loc">
+		 	<div><label  class="col-sm-3 col-form-label" id = "lb3" style="display:none">Please enter a meeting name!
+		 	</label>
 		 	</div>
 		</div>
-		<div class="form-group row text-center">
+		<div class="form-group row text-leftr" >
+		 	<label for="loc" class="col-sm-2 col-form-label">Meeting Location</label>
+			<div class="col-sm-7">
+				<input class="form-control" type="text" placeholder="Meeting location" id="loc" name="loc">
+		 	</div>
+		 	<label  class="col-sm-3 col-form-label" id = "lb4" style="display:none">Please enter a meeting location!
+		 	</label>
+		</div>
+		<div class="form-group row text-left">
 		 	<label for="desc" class="col-sm-2 col-form-label">Meeting Description</label>
-			<div class="col-sm-10">
+			<div class="col-sm-7">
   				<textarea class="form-control" rows="5" id="desc" name="desc"></textarea>
 		 	</div>
+		 	<label  class="col-sm-3 col-form-label" id = "lb5" style="display:none">Please enter a meeting description!
+		 	</label>
 		</div>
-		<div class="form-group row text-center">
+		<div class="form-group row text-left ">
 		 	<label for="date" class="col-sm-2 col-form-label">Select contacts</label>
- 				<div class="col-sm-4 dropdown text-left" name="date" id="date">
-					<select name="dd2"  class="selectpicker" data-style="btn-primary" multiple>
+ 				<div class="col-sm-7 dropdown text-left" name="date" id="date">
+					<select name="dd2" id="dd2"class="selectpicker" data-style="btn-primary" multiple>
 						{% for o in leaders%}
 							<option value={{o}}>{{o}}</option>
  							<br />
               			{% endfor %}
 					</select>
-
-
-
     					
 
   					</ul>
 				</div> 
+			<label  class="col-sm-3 col-form-label" id = "lb6" style="display:none">Please select a contact!
+		 	</label>
 		</div>
 
-		<div class="form-group row text-center">
-		 	<label for="meeting_len" class="col-sm-2 col-form-label">Select meeting length</label>
- 				<div class="col-sm-4 dropdown text-left" name="meeting_len" id="meeting_len">
+
+		<div class="form-group row text-left" >
+		 	<label for="meeting_len" class="col-sm-2 col-form-label">Meeting length</label>
+ 				<div class="col-sm-7 dropdown text-left" name="meeting_len" id="meeting_len">
   					<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Length options
   						<span class="caret"></span>
 					</button>
 
-					<select class="dropdown-menu" style="height: 6em; width: 15em; overflow: auto;" name="meeting_len" multiple>
+					<select class="dropdown-menu" style="height: 6em; width: 15em; overflow: auto;" name="meeting_len" id = "ml" multiple>
   						<option value="15">15 min</option>
   						<option value="30">30 min</option>
   						<option value="45">45 min</option>
@@ -149,21 +159,22 @@
   						<option value="360">6hr</option>
   						<option value="720">12hr</option>
 					</select>
+
     					
   					</ul>
 				</div> 
+			<label  class="col-sm-3 col-form-label" id = "lb7" style="display:none">Please select a meeting length!
+		 	</label>
 		</div>
 
 
-
-
-
-
-		<div class="form-group row text-center">
+		<div class="form-group row text-left">
 		 	<label for="date" class="col-sm-2 col-form-label">Select Dates</label>
-			<div class="col-sm-4">
-				<input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
+			<div class="col-sm-7">
+				<input class="form-control" id="sdate" name="date" placeholder="MM/DD/YYY" type="text"/>
 		 	</div>
+		 	<label  class="col-sm-3 col-form-label" id = "lb8" style="display:none">Please select a meeting date!
+		 	</label>
 		</div>
 		<br>
 		<br>
@@ -179,7 +190,8 @@
 			<div class="col-sm-2 text-right">
 				<!--<a class="btn btn-primary" href="#"> Submit </a>
 				<input class="btn btn-danger" type="reset" value="Erase">-->
-				<input class="btn btn-success" type="submit" value="Submit">
+				<!--input class="btn btn-success" type="submit" value="Submit">-->
+				<button type="button" class="btn btn-success" id="myBtn2">Submit</button>
 			</div>
 			<div class="col-sm-2 text-left">
 				<a class="btn btn-danger" href="home"> Cancel </a>
@@ -194,5 +206,104 @@
 
   <br>
   <br>
+ <script>
+
+$(document).ready(function(){
+    $("#myBtn2").click(function(){
+    	var checkpoint = true
+
+    	//alert("do submit")
+    	var re_mname = /\S+/
+    	var re_mlocation = /\S+/
+    	var re_mdescription = /\S+/
+    	var re_sdate = /\S+/
+
+    	var inputVal3 = document.getElementById("mName");
+    	var inputVal4 = document.getElementById("loc");
+    	var inputVal5 = document.getElementById("desc");
+    	var inputVal6 = document.getElementById("dd2");
+    	var inputVal7 = document.getElementById("ml");
+    	var inputVal8 = document.getElementById("sdate");
+
+   		var label3 = document.getElementById("lb3");
+    	var label4 = document.getElementById("lb4");
+    	var label5 = document.getElementById("lb5");
+    	var label6 = document.getElementById("lb6");
+    	var label7 = document.getElementById("lb7");
+    	var label8 = document.getElementById("lb8");
+
+
+    	var mname =document.getElementById("mName").value;
+    	var mlocation =document.getElementById("loc").value;
+    	var mdescription =document.getElementById("desc").value;
+    	var scontact = document.getElementById("dd2").value;
+    	var mlength = document.getElementById("ml").value;
+    	var sdate =document.getElementById("sdate").value;
+
+
+    	if(re_mname.exec(mname)&&re_mlocation.exec(mlocation)&&re_mdescription.exec(mdescription)&&scontact!=""&&mlength!=""&&sdate!=""){
+    		//alert("pass!");
+    		document.myform.submit();
+    	}
+    	else{
+    		if (!re_mname.exec(mname)){
+	    		inputVal3.style.backgroundColor = "#FF9A9A";
+				label3.style.display= "inline-block";
+	    	}
+	    	else{
+	    		inputVal3.style.backgroundColor = "#FFFFFF";
+	      		label3.style.display= "none";
+	    	}
+
+	    	if (!re_mlocation.exec(mlocation)){
+	    		inputVal4.style.backgroundColor = "#FF9A9A";
+	      		label4.style.display= "inline-block";
+	    	}
+	    	else{
+	    		inputVal4.style.backgroundColor = "#FFFFFF";
+	      		label4.style.display= "none";
+	    	}
+	    	if (!re_mdescription.exec(mdescription)){
+	    		inputVal5.style.backgroundColor = "#FF9A9A";
+	      		label5.style.display= "inline-block";
+	    	}
+	    	else{
+	    		inputVal5.style.backgroundColor = "#FFFFFF";
+	      		label5.style.display= "none";
+	    	}
+	    	if (scontact==""){
+	    		//inputVal6.style.backgroundColor = "#FF9A9A";
+	      		label6.style.display= "inline-block";
+	    	}
+	    	else{
+	    		//inputVal6.style.backgroundColor = "#FFFFFF";
+	      		label6.style.display= "none";
+	    	}
+	    	if (mlength==""){
+	    		//inputVal7.style.backgroundColor = "#FF9A9A";
+	      		label7.style.display= "inline-block";
+	    	}
+	    	else{
+	    		//inputVal7.style.backgroundColor = "#FFFFFF";
+	      		label7.style.display= "none";
+	    	}
+	    	if (sdate==""){
+	    		inputVal8.style.backgroundColor = "#FF9A9A";
+	      		label8.style.display= "inline-block";
+	    	}
+	    	else{
+	    		inputVal8.style.backgroundColor = "#FFFFFF";
+	      		label8.style.display= "none";
+	    	}
+    	}
+
+
+
+    	
+
+
+    });
+});
+</script>
 </body>
 </html>

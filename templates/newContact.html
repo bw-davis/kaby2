@@ -23,7 +23,6 @@
 </head>
 <body>
 
-
 <br>
 
 <div class="container" id="body-wrapper">
@@ -50,19 +49,19 @@
 	<br>
 
 		<form action = "contact_action"   method="post">
-		<div class="form-group row text-center" >
+		<div class="form-group row text-left" >
 		 	<label for="example-text-input" class="col-sm-2 col-form-label">Group name</label>
 			<div class="col-sm-7">
 				<input class="form-control" type="text" id = "John" name="group_name" placeholder="Group name" id="example-text-input">
 		 	</div>
-		 	<label  class="col-sm-2 col-form-label" id = "lb1" style="display:none">Please enter a group name!</label>
+		 	<label  class="col-sm-3 col-form-label text-left" id = "lb1" style="display:none">Please enter a group name!</label>
 		</div>
-		<div class="form-group row text-center">
-		 	<label for="date" class="col-sm-2 col-form-label">Email address</label>
-			<div class="col-sm-4">
+		<div class="form-group row text-left">
+		 	<label for="date" class="col-sm-2 col-form-label text-left">Email address</label>
+			<div class="col-sm-7">
 				<input class="form-control" id="Exit" name="email_address" placeholder="example@uoregon.com" type="text"/>
 		 	</div>
-		 	<label  class="col-sm-2 col-form-label" id = "lb2" style="display:none">Please enter a valid email address!
+		 	<label  class="col-sm-3 col-form-label text-left" id = "lb2" style="display:none">Please enter a valid email address!
 		 	</label>
 		</div>
 		
@@ -94,7 +93,7 @@
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <input type="submit" class="btn btn-primary"></button>
+		        <input type="submit" class="btn btn-primary"></input>
 		      </div>
 		    </div>
 		  </div>
@@ -105,6 +104,7 @@
   </div>
   <br>
   <br>
+
 
 <script>
 
@@ -120,6 +120,8 @@ $(document).ready(function(){
     	var label2 = document.getElementById("lb2");
     	var g_name =document.getElementById("John").value;
     	var g_email=document.getElementById("Exit").value;
+    	alert("aa")
+    	
     	if(re_name.exec(g_name)&&re_email.exec(g_email)){
     		$("#myModal").modal();
     	}
