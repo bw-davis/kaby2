@@ -128,19 +128,31 @@ def timePage():
 
 @app.route("/view_meeting/<meeting_id>")
 def view_meeting(meeting_id):
+    resp={};
+    respond=[];
     app.logger.debug("Entering view_meeting")
 
-    print(meeting_id)  
+    #print(meeting_id)  
     #print("leader {}".format(get_leaders_for_meetingID(meeting_id)))
      # Dummy info for development
-    return render_template('view_meeting.html', title="CIS 422 Debugging Meeting",
-                            location="Deschutes 100", not_responders=["Alex", "Andrew"],
-                            responders = [("Don", [("02/22", "07:00", "07:30"),
-                                                   ("02/23", "12:00", "12:30")]),
-                                          ("Yubo", [("02/24", "13:00", "13:30")])])
+    meeting_info = get_meeting_info(meeting_id)
+    print("meeting info {}".format(meeting_info))
+    m_id=uuid_to_meeting_id(meeting_id); #meeting_id here is uuid_url, shoudl change.
+    not_resp = get_not_responded(m_id)
+    resp = get_responded(m_id)
+    print("\n\n resp = {}\n\n".format(resp))
+    for name, times in resp.iteritems():
+        print'';
+        print(name)
+        for date, st, et in times:
+            print("{}, {} - {}".format(date,st,et));
+            
+    meeting_info = get_meeting_info(meeting_id);
+    return render_template('view_meeting.html', title=meeting_info[1],desc=meeting_info[2],
+                            location=meeting_info[0], not_responders=not_resp,
+                            responders=resp)
     
     print("dts {}".format(get_dts(meeting_id)))
-    #return render_template('view_meeting.html')
 
 @app.route("/respond/<meeting_id>")
 def respond(meeting_id):
@@ -184,7 +196,7 @@ def form_action():
     length_min= request.form.get('meeting_len')
     print("length : {}".format(length_min));
     uuid_url = get_uuid()
-    insert_meeting(loc, desc, length_min, uuid_url)
+    insert_meeting(loc, desc, length_min, uuid_url, name)
     print ("row id : {}".format(cur_meeting_id));
     leaders_to_meet = request.form.getlist('dd2');
     for l in leaders_to_meet:
@@ -357,9 +369,9 @@ def set_response(leader):
     add_to_respond_meeting( leader_to_add,cur_meeting_id);
 
 
-def insert_meeting(loc, desc, length_min, uuid_url):
+def insert_meeting(loc, desc, length_min, uuid_url, meeting_name):
 	global cur_meeting_id 
-	query_string = "insert into meetings (meeting_id, location, description, length, uuid) values ({}, '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url)
+	query_string = "insert into meetings (meeting_id, location, description, length, uuid, meeting_name) values ({}, '{}', '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url, meeting_name)
 	conn =  mysql.connect()
 	cur = conn.cursor()
 	cur.execute(query_string)
@@ -433,6 +445,7 @@ def group_leader_email_to_id(group_leader_email):
     conn.close()
     return leader[0];
 
+
 def get_dt_id(meeting_id, meeting_date):
     print("id {} date {}".format(meeting_id, meeting_date));
     query_string = "select * from meetings join dates_times using (meeting_id) where uuid='{}' and meeting_date='{}'".format(meeting_id, meeting_date)
@@ -442,24 +455,28 @@ def get_dt_id(meeting_id, meeting_date):
     leader = cur.fetchone()
     conn.close()
     print("\n\n leader = {} \n\n".format(leader))
-    return leader;
+    return leader[0];
+
+
 
 def insert_user_response(group_leader_id, meeting_id, available_times):
     for a in available_times:
         year, day, month, stime, etime = a.split("-")
         m_date = '{}-{}-{}'.format(year,day,month)
         print("date {} stime {} etime{}".format(m_date, stime, etime))
-        print("dt_id => {}".format(get_dt_id(meeting_id,m_date)))
-	#query_string = "insert into response (dt_id, start_time, end_time, group_leader_id) values ({},{},{},{});",format(meeting_id, stime, etime, grop_leader_id))
-	#conn =  mysql.connect(
-	#cur = conn.cursor()
-	#cur.execute(query_string)
-	#cur_meeting_id = cur.lastrowid
-	#conn.commit()
-	#conn.close()
+        dt_id = get_dt_id(meeting_id,m_date)
+        query_string = "insert into response (dt_id, start_time, end_time, group_leader_id) values ({},'{}','{}',{});".format(dt_id, stime, etime, group_leader_id)
+        print("query string = {}".format(query_string))
+        conn =  mysql.connect()
+        cur = conn.cursor()
+        cur.execute(query_string)
+        cur_meeting_id = cur.lastrowid
+        conn.commit()
+        conn.close()
+
 
 def get_upcoming_meetings():
-    query_string ="select * from dates_times join meetings using( meeting_id) where meeting_date >= cast(now() as date);"
+    query_string ="select * from dates_times join meetings using(meeting_id) where meeting_date >= cast(now() as date) group by (meeting_id);"
     global meetings 
     meetings=[]
     conn =  mysql.connect()
@@ -486,6 +503,58 @@ def get_past_meetings():
         if (row[2] != ""): 
             past_meetings.append((row[6], row[8]))
     conn.close();
+
+'''
+'''
+def uuid_to_meeting_id(meeting_uuid):
+    query_string = "select meeting_id from meetings where uuid='{}'".format(meeting_uuid)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    cur_meeting_id = cur.fetchone()
+    conn.close()
+    return cur_meeting_id[0]
+
+def get_not_responded(meeting_uuid):
+    not_responded=[];
+    query_string = "Select group_name from respond_meeting join group_leader on(group_id=group_leader_id) where issue_ID={} and group_id not in (select group_leader_id from response where dt_id={});".format(meeting_uuid, meeting_uuid);
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    non_respond = cur.fetchall()
+    for i in non_respond:
+        print("not resp {}".format(i))
+        not_responded.append(i[0])
+    conn.close()
+    return not_responded 
+
+def get_meeting_info(meeting_uuid):
+    query_string="select location, meeting_name, description from meetings where uuid='{}'; ".format(meeting_uuid)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    cur_meeting = cur.fetchone()
+    conn.close()
+    return (cur_meeting[0], cur_meeting[1], cur_meeting[2])
+
+def get_responded(meeting_id):
+    resp={} #list of who's responded
+    date_time=[]
+    query_string="select meeting_date, start_time, end_time, group_name from (select start_time, end_time, group_name, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2 join (select dt_id, meeting_date from dates_times dt) t3 using(dt_id)".format(meeting_id)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    name=""
+    respond = cur.fetchall()
+    for i in respond:
+        #date_time.append((i[0], i[1], i[2]))
+        if i[3] in resp:
+            resp[i[3]].append((i[0], i[1], i[2]));
+        else:
+            resp[i[3]] = [(i[0], i[1], i[2])];
+    conn.close()
+
+    return resp 
 
 
 #################
