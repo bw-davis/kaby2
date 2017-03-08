@@ -12,8 +12,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <!-- Include jQuery -->
-  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
+  <!--script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>-->
   <!-- Include Date Range Picker -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
 
@@ -32,16 +31,64 @@
     });
 
 $(document).ready(function(){
-    $("#myBtn3").click(function(){
-    	
-    	alert("im here1")
-    	for o in datas{
-    		alert("i")
+    $("#myBtn4").click(function(){
+    	var flag = true
+    	//alert("im here1")
+    	{% for o in dates%}
+    	var re_time = /^([0-1][0-9]|2[0-3])([0-5][0-9])-([0-1][0-9]|2[0-3])([0-5][0-9])(([,][0-1][0-9]|2[0-3])([0-5][0-9])-([0-1][0-9]|2[0-3])([0-5][0-9]))*$/
+    	var inputVal0 = document.getElementById("t{{loop.index}}");
+    	var timevalve =document.getElementById("t{{loop.index}}").value;
+    	var label0 = document.getElementById("d{{loop.index}}");
+    	//inputVal0.style.backgroundColor = "#FF9A9A";
+	    //label0.style.display= "inline-block";
+    	//alert("im here2")
+    	var innerflag = true;
+    	if (!re_time.exec(timevalve)){
+    		innerflag = false;
+    		flag=false;
+    		//alert(innerflag);
+    		//alert(flag);
     	}
-    	alert("im here1")
-    	if(1>2){
-    		$("#myModal").modal();
+    	else{
+    		var res = timevalve.split(",");
+    		var arrayLenth = res.length;
+    		for(var i = 0; i < arrayLenth; i++){
+    			var timearray = res[i].split("-");
+    			var early = parseInt(timearray[0]);
+    			var late = parseInt(timearray[1]);
+    			if (late<early) {
+    				innerflag = false;
+    				flag=false;
+    				//alert(innerflag);
+    				//alert(flag);
+    			};
+    		}
     	}
+
+	    if (!innerflag){
+	    		inputVal0.style.backgroundColor = "#FF9A9A";
+	      		label0.style.display= "inline-block";
+
+	      		//alert("im here3")
+	    	}
+	    else{
+	    		inputVal0.style.backgroundColor = "#FFFFFF";
+	      		label0.style.display= "none";
+	      		//alert("im here4")
+	    	}
+
+    	{% endfor %}
+
+    	if(flag){
+    		$("#myModal2").modal();
+    	}
+    	//for o in datas{
+    	//	alert("i")
+    	//}
+    	//alert("im here1")
+    	//if(2>1){
+    	//	$("#myModal").modal();
+    	//}
 
 
 
@@ -81,14 +128,14 @@ $(document).ready(function(){
 
 					<input class="form-control" type="text" value="{{o}}" name="d{{loop.index}}" >
 		 	</div>
-		 		<label for="d{{loop.index}}" class="col-sm-2 col-form-label">Please input a Valid date</label>
+		 		<label for="d{{loop.index}}" class="col-sm-2 col-form-label" style="display:none">Please input a Valid date</label>
 		</div>
 		<div class="form-group row text-center">
 		 	<label for="t{{loop.index}}" class="col-sm-2 col-form-label">Time</label>
 			<div class="col-sm-5">
-				<input class="form-control" type="text" placeholder="0800-0900,1300-1500"  name="t{{loop.index}}">
+				<input class="form-control" type="text" placeholder="0800-0900,1300-1500"  name="t{{loop.index}}" id="t{{loop.index}}">
 		 	</div>
-		 	<label for="d{{loop.index}}" class="col-sm-2 col-form-label">Please input a Valid time</label>
+		 	<label for="d{{loop.index}}" class="col-sm-2 col-form-label" id= "d{{loop.index}}" style="display:none">Please input a Valid time</label>
 		</div>
 		<br>
 		{% endfor %}
@@ -103,8 +150,8 @@ $(document).ready(function(){
 			<div class="col-sm-2 text-right">
 				<!--<a class="btn btn-primary" href="#"> Submit </a>
 				<input class="btn btn-danger" type="reset" value="Erase">-->
-				<input class="btn btn-success" type="submit" value="Submit">
-				<!--button type="button" class="btn btn-success" id="myBtn3">Submit</button>-->
+				<!--input class="btn btn-success" type="submit" value="Submit">-->
+				<button type="button" class="btn btn-success" id="myBtn4">Submit</button>
 			</div>
 			<div class="col-sm-2 text-left">
 				<a class="btn btn-danger" href="home"> Cancel </a>
