@@ -68,9 +68,12 @@
                     {% endfor %}
                     <h3>When are you available?</h3>
                     {% for date, st, et in dts %}
+                        {{ p_date = date}}
+                        {% if p_date is not date %}
                         <h4>{{ date }}</h4>
+                        {% endif %}
                         <input type="checkbox" class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}" id="{{loop.index}}">
-                        <label for="{{loop.index}}" class = "text-left"> {{ st }} - {{ et }} </label>  
+                        <label for="{{loop.index}}"> {{ st }} - {{ et }} </label>  
                         <br>
                     {% endfor %}
                     <br>

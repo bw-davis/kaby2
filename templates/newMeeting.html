@@ -29,7 +29,6 @@
 
 
 
-
   <!-- Include jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
@@ -173,7 +172,7 @@
 			<div class="col-sm-7">
 				<input class="form-control" id="sdate" name="date" placeholder="MM/DD/YYY" type="text"/>
 		 	</div>
-		 	<label  class="col-sm-3 col-form-label" id = "lb8" style="display:none">Please select a meeting date!
+		 	<label  class="col-sm-3 col-form-label" id = "lb8" style="display:none">Please select a correct meeting date!
 		 	</label>
 		</div>
 		<br>
@@ -210,13 +209,25 @@
 
 $(document).ready(function(){
     $("#myBtn2").click(function(){
-    	var checkpoint = true
+    	var checkpoint = true;
+    	var checkdata = true;
+    	var today = new Date();
+    	var current_year = today.getFullYear();
+    	var current_month = today.getMonth() + 1;
+    	var current_day = today.getDate();
+    	//var current_month = 3;
+    	//var current_day = 10;
+		//var current_year = 2017;
+		//alert(current_year);
+		//alert(current_month);
+		//alert(current_day);
+			
 
     	//alert("do submit")
-    	var re_mname = /\S+/
-    	var re_mlocation = /\S+/
-    	var re_mdescription = /\S+/
-    	var re_sdate = /\S+/
+    	var re_mname = /\S+/;
+    	var re_mlocation = /\S+/;
+    	var re_mdescription = /\S+/;
+    	var re_sdate = /\S+/;
 
     	var inputVal3 = document.getElementById("mName");
     	var inputVal4 = document.getElementById("loc");
@@ -240,10 +251,37 @@ $(document).ready(function(){
     	var mlength = document.getElementById("ml").value;
     	var sdate =document.getElementById("sdate").value;
 
+    	alert(sdate);
+    	datearray = sdate.split(",");
+    	for (i = 0; i < datearray.length; i++){
+    		alert(datearray[i]);
+    		var timearray = datearray[i].split("/");
+    		alert(parseInt(timearray[0]));
+    		alert(parseInt(timearray[1]));
+    		alert(parseInt(timearray[2]));
+    		if (parseInt(timearray[2])<current_year){
+    			checkdata=false;
+    			//alert("no1");
+    		}
+    		else{
+    			if(parseInt(timearray[0])<current_month){
+					//alert("no2");	
+    				checkdata=false;
+    			}
+    			else{
+    				if (parseInt(timearray[1])<=current_day){
+    					//alert("no3");
+						checkdata=false;
+						}
+    				}
+    			}
+    		}
+    	
 
-    	if(re_mname.exec(mname)&&re_mlocation.exec(mlocation)&&re_mdescription.exec(mdescription)&&scontact!=""&&mlength!=""&&sdate!=""){
+
+    	if(re_mname.exec(mname)&&re_mlocation.exec(mlocation)&&re_mdescription.exec(mdescription)&&scontact!=""&&mlength!=""&&sdate!=""&&checkdata){
     		//alert("pass!");
-    		document.myform.submit();
+    		//document.myform.submit();
     	}
     	else{
     		if (!re_mname.exec(mname)){
@@ -287,7 +325,7 @@ $(document).ready(function(){
 	    		//inputVal7.style.backgroundColor = "#FFFFFF";
 	      		label7.style.display= "none";
 	    	}
-	    	if (sdate==""){
+	    	if (sdate==""||checkdata==false){
 	    		inputVal8.style.backgroundColor = "#FF9A9A";
 	      		label8.style.display= "inline-block";
 	    	}
