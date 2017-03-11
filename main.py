@@ -156,13 +156,13 @@ def view_meeting(meeting_id):
 @app.route("/respond/<meeting_id>")
 def respond(meeting_id):
     global response_meeting;
-    #print(meeting_id)  
+    print(meeting_id)  
     #return render_template('respond.html')
     #This is dummy information for testing purposes
     dates=get_dts(meeting_id)
     response_meeting=meeting_id;
-    #print("\n\nresp id1 {}\n\n".format(response_meeting))
-    #print("dates ={}", dates)
+    print("\n\nresp id1 {}\n\n".format(response_meeting))
+    print("dates ={}", dates)
     return render_template('respond.html', names=get_leaders_for_meetingID(meeting_id),
             dts=dates)
 
@@ -289,7 +289,7 @@ def newmeeting_action():
             conn.commit()
             print("\n\n date={} | st = {} | et ={}\n".format(sql_date, sql_start_time, sql_end_time));
     conn.close()
-    link = "ix.cs.uoregon.edu:5951/respond/" + uuid_url
+    link = "http://ix.cs.uoregon.edu:5951/respond/" + uuid_url
     send_message("You've been invited", link, email_list);
     #return flask.redirect(flask.url_for("home"))
     return render_template('index.html', meetings=meetings) 
