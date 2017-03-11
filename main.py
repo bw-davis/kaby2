@@ -4,6 +4,7 @@ from flaskext.mysql import MySQL
 from flask_mail import Mail, Message
 import re
 from datetime import timedelta
+from datetime import datetime
 import uuid
 import os
 import re
@@ -283,11 +284,14 @@ def newmeeting_action():
             end_mins   = end_time[2:]
             sql_start_time = '{}:{}:00'.format(start_hour, start_mins)
             sql_end_time = '{}:{}:00'.format(end_hour, end_mins) 
-            print("\n\n date={} | st = {} | et ={}".format(sql_date, sql_start_time, sql_end_time));
-            query_string = "INSERT INTO dates_times (dt_id, meeting_id, start_time, end_time, meeting_date) VALUES ({}, {}, '{}', '{}', '{}');".format("NULL", cur_meeting_id, sql_start_time, sql_end_time , sql_date)
-            cur.execute(query_string)
-            conn.commit()
-            print("\n\n date={} | st = {} | et ={}\n".format(sql_date, sql_start_time, sql_end_time));
+
+            
+            result = split_into_intervals(sql_date, sql_start_time, sql_end_time, int(length_min))
+            #print(result)
+            for d, s, e in result:
+                query_string = "INSERT INTO dates_times (dt_id, meeting_id, start_time, end_time, meeting_date) VALUES ({}, {}, '{}', '{}', '{}');".format("NULL", cur_meeting_id, s, e , d)
+                cur.execute(query_string)
+                conn.commit()
     conn.close()
     link = "http://ix.cs.uoregon.edu:5951/respond/" + uuid_url
     send_message("You've been invited", link, email_list);
@@ -352,6 +356,35 @@ def get_uuid():
     """
     return str(uuid.uuid4())
 
+def split_into_intervals(date, st, et, meeting_len):
+    """
+    Takes a SQL-format date, start time, and end time, and splits it into
+    chucks of length 'meeting_len'
+
+    Args:
+        date:        str, of the form "yyyy-mm-dd"
+        st:          str, of the form "hh:mm:ss"
+        et:          str, of the form "hh:mm:ss"
+        meeting_len: int, length of meeting in minutes
+
+    Returns:
+        list of tuples, where tuple of the form (date, st, et)
+    """
+    result = []
+    st_fmt = "{} {}".format(date, st)
+    et_fmt = "{} {}".format(date, et)
+    print("st_fmt: ", st_fmt)
+    print("et_fmt: ", et_fmt)
+    st_dt = datetime.strptime(st_fmt, "%Y-%m-%d %H:%M:%S")
+    et_dt = datetime.strptime(et_fmt, "%Y-%m-%d %H:%M:%S")
+    delta = timedelta(0, meeting_len*60)  #timedelta takes seconds
+    while st_dt + delta <= et_dt:
+        start = st_dt
+        end   = st_dt + delta
+        tup = (str(start).split()[0], str(start).split()[1], str(end).split()[1])
+        result.append(tup)
+        st_dt += delta
+    return result
 
 
 
