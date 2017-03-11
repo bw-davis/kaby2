@@ -265,9 +265,13 @@ def newmeeting_action():
         time_ranges = time.split(',');
         for t in time_ranges:
             start_time, end_time = t.split('-');
+            start_time_hour=start_time[0]+start_time[1]
+            start_time_minute=start_time[2]+start_time[3]
+            end_time_hour=end_time[0]+end_time[1]
+            end_time_minute=end_time[2]+end_time[3]
             print("start {} end {}".format(start_time, end_time)) 
-            sql_start_time = '{}:00:00'.format(start_time) 
-            sql_end_time= '{}:00:00'.format(end_time) 
+            sql_start_time = '{}:{}:00'.format(start_time_hour,start_time_minute) 
+            sql_end_time= '{}:{}:00'.format(end_time_hour,end_time_minute) 
             query_string = "INSERT INTO `kaby`.`dates_times` (`dt_id`, `meeting_id`, `start_time`, `end_time`, `meeting_date`) VALUES ({}, {}, '{}', '{}', '{}');".format("NULL", cur_meeting_id, sql_start_time.strip('0'), sql_end_time , sql_date);
             cur.execute(query_string)
             print ("row id : {}".format(cur_meeting_id))
