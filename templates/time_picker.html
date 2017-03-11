@@ -124,9 +124,10 @@ $(document).ready(function(){
 		{% for o in dates%}
 		<div class="form-group row text-center">
 				<label for="d{{loop.index}}" class="col-sm-2 col-form-label">Date</label>
-			<div class="col-sm-5">
+			<div class="col-sm-5 text-left">
 
-					<input class="form-control" type="text" value="{{o}}" name="d{{loop.index}}" >
+					<!--input class="form-control" type="text" value="{{o}}" name="d{{loop.index}}" -->
+					<label for="d{{loop.index}}" class="text-left"> {{o}} </label>
 		 	</div>
 		 		<label for="d{{loop.index}}" class="col-sm-2 col-form-label" style="display:none">Please input a Valid date</label>
 		</div>

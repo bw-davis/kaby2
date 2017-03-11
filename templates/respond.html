@@ -70,7 +70,7 @@
                     {% for date, st, et in dts %}
                         <h4>{{ date }}</h4>
                         <input type="checkbox" class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}" id="{{loop.index}}">
-                        <label for="{{loop.index}}"> {{ st }} - {{ et }} </label>  
+                        <label for="{{loop.index}}" class = "text-left"> {{ st }} - {{ et }} </label>  
                         <br>
                     {% endfor %}
                     <br>
