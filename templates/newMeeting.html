@@ -251,14 +251,9 @@ $(document).ready(function(){
     	var mlength = document.getElementById("ml").value;
     	var sdate =document.getElementById("sdate").value;
 
-    	alert(sdate);
     	datearray = sdate.split(",");
     	for (i = 0; i < datearray.length; i++){
-    		alert(datearray[i]);
     		var timearray = datearray[i].split("/");
-    		alert(parseInt(timearray[0]));
-    		alert(parseInt(timearray[1]));
-    		alert(parseInt(timearray[2]));
     		if (parseInt(timearray[2])<current_year){
     			checkdata=false;
     			//alert("no1");
@@ -281,7 +276,7 @@ $(document).ready(function(){
 
     	if(re_mname.exec(mname)&&re_mlocation.exec(mlocation)&&re_mdescription.exec(mdescription)&&scontact!=""&&mlength!=""&&sdate!=""&&checkdata){
     		//alert("pass!");
-    		//document.myform.submit();
+    		document.myform.submit();
     	}
     	else{
     		if (!re_mname.exec(mname)){
