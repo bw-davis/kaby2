@@ -55,42 +55,34 @@
     <!-- /HEADER -->
     <div class="form-group row text-center" >                                                      
         <div class="container">
-            <div class="col-sm-10">                                                                    
-                <label for="meeting_name"  class="col-sm-2 text-left">Meeting Name:</label>                    
-                <div  class="col-sm-5 text-left">                                                                    
-                    <div name="meeting_name" class="col-sm-5 text-left" readonly> {{ title }}</div>   
-                </div>                                                                                     
+        <div class="col-sm-10">                                                                    
+            <div class="col-sm-6 text-left">                                                                    
+                <label for="meeting_name" class="col-sm-6 col-form-label"><h4>Meeting Name:</h4></label>                    
             </div>                                                                                     
+            <div id="meeting_name" name="meeting_name"class="col-sm-5 text-left">                                                                    
+                <div  class="col-sm-5" readonly> {{ title }}</div>   
+            </div>                                                                                     
+        </div>                                                                                     
         </div>                                                                                     
         
     </div>     
     <br>
-
     <div class="form-group row text-center" >                                                      
-        <div class="container">
-            <div class="col-sm-10">                                                                    
-                    <label for="meeting_name"  class="col-sm-2 text-left">Location:</label>                    
-                <div  class="col-sm-8 text-left">                                                                    
-                    <div name="meeting_name" class="col-sm-8 text-left" readonly> {{ location }}</div>   
-                </div>                                                                                     
-            </div>                                                                                     
+        <label for="mName" class="col-sm-2 col-form-label">Location</label>                    
+        <div class="col-sm-10">                                                                    
+            <label class="col-sm-2 col-form-label" readonly> {{ location }}</label>   
         </div>                                                                                     
-        
     </div>     
-   <br>
-
+    <br>
     <div class="form-group row text-center" >                                                      
-        <div class="container">
-            <div class="col-sm-10">                                                                    
-                    <label for="meeting_name"  class="col-sm-2 text-left">Description:</label>                    
-                <div  class="col-sm-8 text-left">                                                                    
-                    <div name="meeting_name" class="col-sm-8 text-left" readonly> {{ desc }}</div>   
-                </div>                                                                                     
-            </div>                                                                                     
+        <label for="mName" class="col-sm-2 col-form-label">Description</label>                    
+        <div class="col-sm-10">                                                                    
+            <label class="col-sm-2 col-form-label" readonly> {{ desc }}</label>   
         </div>                                                                                     
-        
     </div>     
-   <hr>
+    <hr>
+
+
 
 
     <div class="form-group row text-center" >                                                      

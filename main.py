@@ -70,28 +70,27 @@ def get_group_leaders():
 
 @app.before_request
 def before_action():
-    print (request.path)
+    #print (request.path)
     #page = True
     #if request.path=='/login':
     #    page = False
     #elif request.path == '/login_action':
     #    page = False
     #elif page = re.match("([0-9A-z]+)([@]+)([0-9A-z]+)([.]+)([0-9A-z]+)", email) != None
-
     #elif page = re.match("(\Ahttp://ix.cs.uoregon.edu:5951/respond/)", email) != None
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=10)
     if request.path.find('.png')==-1:
         if not request.path=='/login' and  not request.path=='/login_action' and not re.search("respond", request.path)!=None and not re.search("thanks", request.path)!=None:
             if not 'username' in session:
-                print('not in session!!')
+                #print('not in session!!')
                 session['newurl']=request.path
             #        if not 'username' in session and not 'password' in session:
             #            print(session['username'])
             #            print('*****')
             #            print(session['username'])
             #            session['newurl']=request.path
-                print('you should go to login')
+                #print('you should go to login')
                 return flask.redirect(flask.url_for("login"))
             #    return
             else:
@@ -100,12 +99,12 @@ def before_action():
 @app.route('/')
 @app.route('/login')
 def login():
-    print("login")
+    #print("login")
     return render_template('login.html') 
 
 @app.route('/logout')	
 def logout():
-    print('im in logout')
+    #print('im in logout')
     session.clear() 
     return flask.redirect(flask.url_for("login"))
 
@@ -128,19 +127,31 @@ def timePage():
 
 @app.route("/view_meeting/<meeting_id>")
 def view_meeting(meeting_id):
+    resp={};
+    respond=[];
     app.logger.debug("Entering view_meeting")
 
-    print(meeting_id)  
+    #print(meeting_id)  
     #print("leader {}".format(get_leaders_for_meetingID(meeting_id)))
-     # Dummy info for development
-    return render_template('view_meeting.html', title="CIS 422 Debugging Meeting",
-                            location="Deschutes 100", not_responders=["Alex", "Andrew"],
-                            responders = [("Don", [("02/22", "07:00", "07:30"),
-                                                   ("02/23", "12:00", "12:30")]),
-                                          ("Yubo", [("02/24", "13:00", "13:30")])])
+    #Dummy info for development
+    meeting_info = get_meeting_info(meeting_id)
+    #print("meeting info {}".format(meeting_info))
+    m_id=uuid_to_meeting_id(meeting_id); #meeting_id here is uuid_url, shoudl change.
+    not_resp = get_not_responded(m_id)
+    resp = get_responded(m_id)
+    #print("\n\n resp = {}\n\n".format(resp))
+    for name, times in resp.iteritems():
+        #print'';
+        #print(name)
+        for date, st, et in times:
+            print("{}, {} - {}".format(date,st,et));
+            
+    meeting_info = get_meeting_info(meeting_id);
+    return render_template('view_meeting.html', title=meeting_info[1],desc=meeting_info[2],
+                            location=meeting_info[0], not_responders=not_resp,
+                            responders=resp)
     
-    print("dts {}".format(get_dts(meeting_id)))
-    #return render_template('view_meeting.html')
+    #print("dts {}".format(get_dts(meeting_id)))
 
 @app.route("/respond/<meeting_id>")
 def respond(meeting_id):
@@ -151,6 +162,7 @@ def respond(meeting_id):
     dates=get_dts(meeting_id)
     response_meeting=meeting_id;
     print("\n\nresp id1 {}\n\n".format(response_meeting))
+    print("dates ={}", dates)
     return render_template('respond.html', names=get_leaders_for_meetingID(meeting_id),
             dts=dates)
 
@@ -162,6 +174,55 @@ def thanks():
 #########
 ## POST METHODS
 #########
+
+
+
+@app.route('/login_action', methods=['POST'])
+def login_action():
+    #print("I'm in login_action")
+    name = request.form.get('user_name')
+    passwd = "{}".format(request.form.get('password'))
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    query_string = "SELECT password from user where fname='{}'".format(name)
+    cur.execute(query_string)
+    rows = cur.fetchall()
+    for row in rows:
+        if (row[0]==passwd):
+            #print("passowords Match")
+            #print(request.form.get('user_name'))
+            #print('name')
+            session['username'] = name
+            conn.close()
+            get_upcoming_meetings()
+            #get_past_meetings()
+            return flask.redirect(flask.url_for("home"))
+        else:
+            print("row{} does not equal password{}".format(row, passwd))
+    conn.close()
+    return flask.redirect(flask.url_for("login"))
+
+@app.route('/contact_action', methods=['POST'])
+def contact_action():
+    #flash('You did someting here')
+    group_name = request.form.get('group_name')
+    email_address = request.form.get('email_address')
+    #print("group_name");
+    #print(group_name);
+    #print("email_address:");
+    #print(email_address);
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    query_string = "INSERT INTO `kaby`.`group_leader` (`group_leader_email`, `group_name`) VALUES ('{}', '{}');".format(email_address,group_name)
+    #print(query_string)
+    cur.execute(query_string)
+    conn.commit()
+    conn.close()
+    return flask.redirect(flask.url_for("home"))
+    #return flask.redirect(flask.url_for("newContact"))
+    #return render_template('newContact.html') 
+
+
 
 @app.route('/form_action', methods=['POST'])
 def form_action():
@@ -175,7 +236,7 @@ def form_action():
     date = request.form.get('date')
     dates = date.split(",");
     num_dates = len(dates)
-    print("num dates entered: {}".format(num_dates))
+    #print("num dates entered: {}".format(num_dates))
     for d in dates:
         print ("date:{}".format(d))
     name = request.form.get('mName')
@@ -184,62 +245,14 @@ def form_action():
     length_min= request.form.get('meeting_len')
     print("length : {}".format(length_min));
     uuid_url = get_uuid()
-    insert_meeting(loc, desc, length_min, uuid_url)
-    print ("row id : {}".format(cur_meeting_id));
+    insert_meeting(loc, desc, length_min, uuid_url, name)
+    #print ("row id : {}".format(cur_meeting_id));
     leaders_to_meet = request.form.getlist('dd2');
     for l in leaders_to_meet:
-        print("email {}".format(l));
+        #print("email {}".format(l));
         email_list.append(l);
         set_response(l);
     return render_template('time_picker.html', dates=dates) 
-
-
-@app.route('/login_action', methods=['POST'])
-def login_action():
-    print("I'm in login_action")
-    name = request.form.get('user_name')
-    passwd = "{}".format(request.form.get('password'))
-    conn =  mysql.connect()
-    cur = conn.cursor()
-    query_string = "SELECT password from user where fname='{}'".format(name)
-    cur.execute(query_string)
-    rows = cur.fetchall()
-    for row in rows:
-        if (row[0]==passwd):
-            print("passowords Match")
-            print(request.form.get('user_name'))
-            print('name')
-            session['username'] = name
-            conn.close()
-            get_upcoming_meetings()
-            get_past_meetings()
-            return flask.redirect(flask.url_for("home"))
-        else:
-            print("row{} does not equal password{}".format(row, passwd))
-    conn.close()
-    return flask.redirect(flask.url_for("login"))
-
-@app.route('/contact_action', methods=['POST'])
-def contact_action():
-    #flash('You did someting here')
-    group_name = request.form.get('group_name')
-    email_address = request.form.get('email_address')
-    print("group_name");
-    print(group_name);
-    print("email_address:");
-    print(email_address);
-    conn =  mysql.connect()
-    cur = conn.cursor()
-    query_string = "INSERT INTO `kaby`.`group_leader` (`group_leader_email`, `group_name`) VALUES ('{}', '{}');".format(email_address,group_name)
-    print(query_string)
-    cur.execute(query_string)
-    conn.commit()
-    conn.close()
-    return flask.redirect(flask.url_for("home"))
-    #return flask.redirect(flask.url_for("newContact"))
-    #return render_template('newContact.html') 
-
-
 
 
 @app.route('/newmeeting_action', methods=['POST'])
@@ -254,30 +267,29 @@ def newmeeting_action():
     conn =  mysql.connect()
     cur = conn.cursor()
     for i in range(num_dates):
-        print("global dates[i]={}".format(dates[i]))
-        name = "t{}".format(i+1);
-        day, month, year = dates[i].split("/");
-        sql_date='{}-{}-{}'.format(year, month,day);
+        #print("global dates[i]={}".format(dates[i]))
+        name = "t{}".format(i+1)
+        month, day, year = dates[i].split("/")
+        sql_date='{}-{}-{}'.format(year, month,day)
         time = request.form.get(name)
-        sql_time='{}:00:00'.format(time)
-        print (sql_time) 
-        #query_string = "insert into meetings_times_dates (issue_ID, meeting_id, start_time, date, length) values ({}, {}, '{}', '{}', {});".format("NULL", cur_meeting_id, sql_time, sql_date, int(length_min));
-        time_ranges = time.split(',');
+        #sql_time='{}:00:00'.format(time)
+        time_ranges = time.split(',')
         for t in time_ranges:
-            start_time, end_time = t.split('-');
-            start_time_hour=start_time[0]+start_time[1]
-            start_time_minute=start_time[2]+start_time[3]
-            end_time_hour=end_time[0]+end_time[1]
-            end_time_minute=end_time[2]+end_time[3]
-            print("start {} end {}".format(start_time, end_time)) 
-            sql_start_time = '{}:{}:00'.format(start_time_hour,start_time_minute) 
-            sql_end_time= '{}:{}:00'.format(end_time_hour,end_time_minute) 
-            query_string = "INSERT INTO `kaby`.`dates_times` (`dt_id`, `meeting_id`, `start_time`, `end_time`, `meeting_date`) VALUES ({}, {}, '{}', '{}', '{}');".format("NULL", cur_meeting_id, sql_start_time.strip('0'), sql_end_time , sql_date);
+            start_time, end_time = t.split('-')
+            #print("start {} end {}".format(start_time, end_time)) 
+            start_hour = start_time[0:2]
+            start_mins = start_time[2:]
+            end_hour   = end_time[0:2]
+            end_mins   = end_time[2:]
+            sql_start_time = '{}:{}:00'.format(start_hour, start_mins)
+            sql_end_time = '{}:{}:00'.format(end_hour, end_mins) 
+            print("\n\n date={} | st = {} | et ={}".format(sql_date, sql_start_time, sql_end_time));
+            query_string = "INSERT INTO dates_times (dt_id, meeting_id, start_time, end_time, meeting_date) VALUES ({}, {}, '{}', '{}', '{}');".format("NULL", cur_meeting_id, sql_start_time, sql_end_time , sql_date)
             cur.execute(query_string)
-            print ("row id : {}".format(cur_meeting_id))
             conn.commit()
+            print("\n\n date={} | st = {} | et ={}\n".format(sql_date, sql_start_time, sql_end_time));
     conn.close()
-    link = "ix.cs.uoregon.edu:5951/respond/" + uuid_url
+    link = "http://ix.cs.uoregon.edu:5951/respond/" + uuid_url
     send_message("You've been invited", link, email_list);
     #return flask.redirect(flask.url_for("home"))
     return render_template('index.html', meetings=meetings) 
@@ -289,14 +301,22 @@ def respond_meeting():
     user_name = request.form.get('user_name')
     available_times = request.form.getlist('available_times')
     available_times = [x.encode('ascii','ignore') for x in available_times] #convert from unicode to str
-
-    print("Username: " + user_name)
-    print("Available times: ", available_times)
-    user_id= group_leader_email_to_id(user_name);
-    print("\n\n user name {} to user id {}".format(user_name, user_id))
-    print("resp id {}".format(response_meeting))
-
+    #print("Username: " + user_name)
+    #print("Available times: ", available_times)
+    user_id= group_leader_email_to_id(user_name)
+    #print("\n\n user name {} to user id {}".format(user_name, user_id))
+    #print("resp id {}".format(response_meeting))
     insert_user_response(user_id ,response_meeting, available_times)
+    m_id=uuid_to_meeting_id(response_meeting); #meeting_id here is uuid_url, shoudl change.
+    num_not_resp = get_num_non_responded(m_id)
+    email_list=["ahill7@uoregon.edu"]
+    link="http://ix.cs.uoregon.edu:5951/view_meeting/" + response_meeting
+    #print("\n\n number not responded = {} \n\n").format(num_not_resp);
+    if(num_not_resp == 0):
+        #print("email prfessor")
+        send_message("All groups have responded", link, email_list);
+    else:
+        print("dont email yet")
     return flask.redirect(flask.url_for("thanks"))
 
 
@@ -337,10 +357,11 @@ def get_uuid():
 
 #################
 # MySQL query functions
+# Some are no longer being used
 ################
 
 def add_to_respond_meeting(leader_id, meeting_id):
-	print("adding to respond_meeting table")
+	#print("adding to respond_meeting table")
 	query_add_respond = "insert into respond_meeting (issue_ID, group_id) values ({},{})".format(meeting_id, leader_id);
 	conn = mysql.connect()
 	cur = conn.cursor()
@@ -356,14 +377,14 @@ def set_response(leader):
     cur2.execute(query_string_userID)
     p = cur2.fetchone()
     leader_to_add = p[0];
-    print("\n\n just got {} \n\n".format(leader_to_add));
+    #print("\n\n just got {} \n\n".format(leader_to_add));
     conn2.close();
     add_to_respond_meeting( leader_to_add,cur_meeting_id);
 
 
-def insert_meeting(loc, desc, length_min, uuid_url):
+def insert_meeting(loc, desc, length_min, uuid_url, meeting_name):
 	global cur_meeting_id 
-	query_string = "insert into meetings (meeting_id, location, description, length, uuid) values ({}, '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url)
+	query_string = "insert into meetings (meeting_id, location, description, length, uuid, meeting_name) values ({}, '{}', '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url, meeting_name)
 	conn =  mysql.connect()
 	cur = conn.cursor()
 	cur.execute(query_string)
@@ -437,33 +458,38 @@ def group_leader_email_to_id(group_leader_email):
     conn.close()
     return leader[0];
 
+
 def get_dt_id(meeting_id, meeting_date):
-    print("id {} date {}".format(meeting_id, meeting_date));
+    #print("id {} date {}".format(meeting_id, meeting_date));
     query_string = "select * from meetings join dates_times using (meeting_id) where uuid='{}' and meeting_date='{}'".format(meeting_id, meeting_date)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
     leader = cur.fetchone()
     conn.close()
-    print("\n\n leader = {} \n\n".format(leader))
-    return leader;
+    #print("\n\n leader = {} \n\n".format(leader))
+    return leader[0];
+
+
 
 def insert_user_response(group_leader_id, meeting_id, available_times):
     for a in available_times:
         year, day, month, stime, etime = a.split("-")
         m_date = '{}-{}-{}'.format(year,day,month)
-        print("date {} stime {} etime{}".format(m_date, stime, etime))
-        print("dt_id => {}".format(get_dt_id(meeting_id,m_date)))
-	#query_string = "insert into response (dt_id, start_time, end_time, group_leader_id) values ({},{},{},{});",format(meeting_id, stime, etime, grop_leader_id))
-	#conn =  mysql.connect(
-	#cur = conn.cursor()
-	#cur.execute(query_string)
-	#cur_meeting_id = cur.lastrowid
-	#conn.commit()
-	#conn.close()
+        #print("date {} stime {} etime{}".format(m_date, stime, etime))
+        dt_id = get_dt_id(meeting_id,m_date)
+        query_string = "insert into response (dt_id, start_time, end_time, group_leader_id) values ({},'{}','{}',{});".format(dt_id, stime, etime, group_leader_id)
+        #print("query string = {}".format(query_string))
+        conn =  mysql.connect()
+        cur = conn.cursor()
+        cur.execute(query_string)
+        cur_meeting_id = cur.lastrowid
+        conn.commit()
+        conn.close()
+
 
 def get_upcoming_meetings():
-    query_string ="select * from dates_times join meetings using( meeting_id) where meeting_date >= cast(now() as date);"
+    query_string ="select * from dates_times join meetings using(meeting_id) where meeting_date >= cast(now() as date) group by (meeting_id);"
     global meetings 
     meetings=[]
     conn =  mysql.connect()
@@ -471,7 +497,7 @@ def get_upcoming_meetings():
     cur.execute(query_string)
     rows= cur.fetchall()
     for row in rows:
-        print("\n\n row {} \n\n".format(row));
+        #print("\n\n row {} \n\n".format(row));
         if (row[2] != ""): 
             meetings.append((row[6], row[8]))
     conn.close();
@@ -486,10 +512,79 @@ def get_past_meetings():
     cur.execute(query_string)
     rows= cur.fetchall()
     for row in rows:
-        print("\n\n row {} \n\n".format(row));
+        #print("\n\n row {} \n\n".format(row));
         if (row[2] != ""): 
             past_meetings.append((row[6], row[8]))
     conn.close();
+
+'''
+'''
+def uuid_to_meeting_id(meeting_uuid):
+    query_string = "select meeting_id from meetings where uuid='{}'".format(meeting_uuid)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    cur_meeting_id = cur.fetchone()
+    conn.close()
+    return cur_meeting_id[0]
+
+def get_not_responded(meeting_uuid):
+    not_responded=[];
+    query_string = "Select group_name from respond_meeting join group_leader on(group_id=group_leader_id) where issue_ID={} and group_id not in (select group_leader_id from response where dt_id={});".format(meeting_uuid, meeting_uuid);
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    num_not_respond=0;
+    cur.execute(query_string)
+    non_respond = cur.fetchall()
+    for i in non_respond:
+        num_not_respond= num_not_respond + 1
+        #print("not resp {}".format(i))
+        not_responded.append(i[0])
+    conn.close()
+    #print("num not resp  ={}".format(num_not_respond));
+    return not_responded 
+
+
+def get_num_non_responded(meeting_uuid):
+    not_responded=[];
+    query_string = "Select count(*) from respond_meeting join group_leader on(group_id=group_leader_id) where issue_ID={} and group_id not in (select group_leader_id from response where dt_id={});".format(meeting_uuid, meeting_uuid);
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    num_not_respond=0;
+    cur.execute(query_string)
+    non_respond = cur.fetchone()
+    conn.close()
+    #print("num not resp={}".format(non_respond[0]));
+    return non_respond[0] 
+
+
+
+def get_meeting_info(meeting_uuid):
+    query_string="select location, meeting_name, description from meetings where uuid='{}'; ".format(meeting_uuid)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    cur_meeting = cur.fetchone()
+    conn.close()
+    return (cur_meeting[0], cur_meeting[1], cur_meeting[2])
+
+def get_responded(meeting_id):
+    resp={} #list of who's responded
+    date_time=[]
+    query_string="select meeting_date, start_time, end_time, group_name from (select start_time, end_time, group_name, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2 join (select dt_id, meeting_date from dates_times dt) t3 using(dt_id)".format(meeting_id)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    name=""
+    respond = cur.fetchall()
+    for i in respond:
+        #date_time.append((i[0], i[1], i[2]))
+        if i[3] in resp:
+            resp[i[3]].append((i[0], i[1], i[2]));
+        else:
+            resp[i[3]] = [(i[0], i[1], i[2])];
+    conn.close()
+    return resp 
 
 
 #################
