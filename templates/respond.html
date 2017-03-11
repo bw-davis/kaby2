@@ -67,13 +67,36 @@
                         <br>
                     {% endfor %}
                     <h3>When are you available?</h3>
+                    {% set dict ={'last_date' : ''} %}
                     {% for date, st, et in dts %}
-                        {{ p_date = date}}
-                        {% if p_date is not date %}
-                        <h4>{{ date }}</h4>
-                        {% endif %}
+                        {% set cur_date = date %}
+                            {% if dict.last_date == cur_date %}
+                            {% else %}
+                                <div class="row">
+                                <div class="container">
+                                <div class="col-sm-10">
+                                <div class="col-sm-10 text-left">
+                                <h4>{{cur_date}}</h4>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                
+                            {% endif %}
+                            {% if dict.update({'last_date': cur_date}) %} {% endif %}
+                        <div class="row">
+                        <div class="container">
+                        <div class="col-sm-10">
+                        <div class="col-sm-1"> </div>
+                        <div class="col-sm-9 text-left">
                         <input type="checkbox" class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}" id="{{loop.index}}">
                         <label for="{{loop.index}}"> {{ st }} - {{ et }} </label>  
+
+
+                        </div>
+                        </div>
+                        </div>
+                        </div>
                         <br>
                     {% endfor %}
                     <br>
