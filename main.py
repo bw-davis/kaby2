@@ -71,31 +71,16 @@ def get_group_leaders():
 
 @app.before_request
 def before_action():
-    #print (request.path)
-    #page = True
-    #if request.path=='/login':
-    #    page = False
-    #elif request.path == '/login_action':
-    #    page = False
-    #elif page = re.match("([0-9A-z]+)([@]+)([0-9A-z]+)([.]+)([0-9A-z]+)", email) != None
-    #elif page = re.match("(\Ahttp://ix.cs.uoregon.edu:5951/respond/)", email) != None
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=10)
     if request.path.find('.png')==-1:
         if not request.path=='/login' and  not request.path=='/login_action' and not re.search("respond", request.path)!=None and not re.search("thanks", request.path)!=None:
             if not 'username' in session:
-                #print('not in session!!')
                 session['newurl']=request.path
-            #        if not 'username' in session and not 'password' in session:
-            #            print(session['username'])
-            #            print('*****')
-            #            print(session['username'])
-            #            session['newurl']=request.path
-                #print('you should go to login')
                 return flask.redirect(flask.url_for("login"))
-            #    return
             else:
                 print('in session!!')
+
 
 @app.route('/')
 @app.route('/login')
@@ -103,69 +88,63 @@ def login():
     #print("login")
     return render_template('login.html') 
 
+
 @app.route('/logout')	
 def logout():
-    #print('im in logout')
     session.clear() 
     return flask.redirect(flask.url_for("login"))
+
 
 @app.route('/home')
 def home():
     return render_template('index.html', meetings=meetings, past_meetings=past_meetings) 
+
 
 @app.route('/newMeeting')
 def newMeeting():
 	get_group_leaders()
 	return render_template('newMeeting.html',  leaders=group_leaders)
 
+
 @app.route('/newContact')
 def newContact():
     return render_template('newContact.html') 
 
+
 @app.route('/timePage')
 def timePage():
     return render_template('time_picker.html') 
+
 
 @app.route("/view_meeting/<meeting_id>")
 def view_meeting(meeting_id):
     resp={};
     respond=[];
     app.logger.debug("Entering view_meeting")
-
-    #print(meeting_id)  
-    #print("leader {}".format(get_leaders_for_meetingID(meeting_id)))
-    #Dummy info for development
     meeting_info = get_meeting_info(meeting_id)
-    #print("meeting info {}".format(meeting_info))
     m_id=uuid_to_meeting_id(meeting_id); #meeting_id here is uuid_url, shoudl change.
     not_resp = get_not_responded(m_id)
     resp = get_responded(m_id)
-    #print("\n\n resp = {}\n\n".format(resp))
     for name, times in resp.iteritems():
-        #print'';
-        #print(name)
         for date, st, et in times:
             print("{}, {} - {}".format(date,st,et));
-            
     meeting_info = get_meeting_info(meeting_id);
     return render_template('view_meeting.html', title=meeting_info[1],desc=meeting_info[2],
                             location=meeting_info[0], not_responders=not_resp,
                             responders=resp)
-    
-    #print("dts {}".format(get_dts(meeting_id)))
+
 
 @app.route("/respond/<meeting_id>")
 def respond(meeting_id):
     global response_meeting;
     print(meeting_id)  
-    #return render_template('respond.html')
-    #This is dummy information for testing purposes
     dates=get_dts(meeting_id)
     response_meeting=meeting_id;
     print("\n\nresp id1 {}\n\n".format(response_meeting))
     print("dates ={}", dates)
     return render_template('respond.html', names=get_leaders_for_meetingID(meeting_id),
             dts=dates)
+
 
 @app.route("/thanks")
 def thanks():
@@ -175,8 +154,6 @@ def thanks():
 #########
 ## POST METHODS
 #########
-
-
 
 @app.route('/login_action', methods=['POST'])
 def login_action():
@@ -284,8 +261,6 @@ def newmeeting_action():
             end_mins   = end_time[2:]
             sql_start_time = '{}:{}:00'.format(start_hour, start_mins)
             sql_end_time = '{}:{}:00'.format(end_hour, end_mins) 
-
-            
             result = split_into_intervals(sql_date, sql_start_time, sql_end_time, int(length_min))
             #print(result)
             for d, s, e in result:
@@ -294,9 +269,10 @@ def newmeeting_action():
                 conn.commit()
     conn.close()
     link = "http://ix.cs.uoregon.edu:5951/respond/" + uuid_url
-    send_message("You've been invited", link, email_list);
-    #return flask.redirect(flask.url_for("home"))
-    return render_template('index.html', meetings=meetings) 
+    send_message("You've been invited", link, email_list)
+    get_upcoming_meetings()
+    get_past_meetings()
+    return render_template('index.html', meetings=meetings, past_meetings=past_meetings) 
 
 
 @app.route('/respond_meeting', methods=['POST'])
@@ -550,7 +526,18 @@ def get_past_meetings():
             past_meetings.append((row[6], row[8]))
     conn.close();
 
+
 '''
+Mysql helper function that takes a meetings unique uuid_url and converts it to that meetins primary key(meeting_id)
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_uuid: A meetings unique uuid created url
+    
+    side affects:
+        None
+
+    return:
+        cur_meeting_id: An int, the unique primary key id for the coresposnding uuid_url
 '''
 def uuid_to_meeting_id(meeting_uuid):
     query_string = "select meeting_id from meetings where uuid='{}'".format(meeting_uuid)
@@ -561,6 +548,19 @@ def uuid_to_meeting_id(meeting_uuid):
     conn.close()
     return cur_meeting_id[0]
 
+
+'''
+Mysql helper function that gets the list of all contacts who have NOT respnded to the meeting request yet.
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_uuid: A meetings unique uuid created url
+    
+    side affects:
+        None
+
+    return:
+        not_respnded: Array of strings, represents the list of 0 or more group leaders who have not responded to the meeting request.
+'''
 def get_not_responded(meeting_uuid):
     not_responded=[];
     query_string = "Select group_name from respond_meeting join group_leader on(group_id=group_leader_id) where issue_ID={} and group_id not in (select group_leader_id from response where dt_id={});".format(meeting_uuid, meeting_uuid);
@@ -574,10 +574,21 @@ def get_not_responded(meeting_uuid):
         #print("not resp {}".format(i))
         not_responded.append(i[0])
     conn.close()
-    #print("num not resp  ={}".format(num_not_respond));
     return not_responded 
 
 
+'''
+Mysql helper function that gets the number of all contacts who have NOT respnded to the meeting request yet.
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_uuid: A meetings unique uuid created url
+    
+    side affects:
+        None
+
+    return:
+        non_respond: An int, the number of contacts who have not responded yet.
+'''
 def get_num_non_responded(meeting_uuid):
     not_responded=[];
     query_string = "Select count(*) from respond_meeting join group_leader on(group_id=group_leader_id) where issue_ID={} and group_id not in (select group_leader_id from response where dt_id={});".format(meeting_uuid, meeting_uuid);
