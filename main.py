@@ -128,7 +128,7 @@ def view_meeting(meeting_id):
     not_resp = get_not_responded(m_id)
     resp = get_responded(m_id)
     for name, times in resp.iteritems():
-        for date, st, et in times:
+        for date, st, et, checked in times:
             print("{}, {} - {}".format(date,st,et));
     meeting_info = get_meeting_info(meeting_id);
     return render_template('view_meeting.html', title=meeting_info[1],desc=meeting_info[2],
@@ -470,22 +470,40 @@ def get_dt_id(meeting_id, meeting_date):
     #print("\n\n leader = {} \n\n".format(leader))
     return leader[0];
 
+def delete_prevous_response(group_leader_id, dt_id):
+    query_allow_update ="SET SQL_SAFE_UPDATES = 0;"
+    query_disallow_update ="SET SQL_SAFE_UPDATES = 1;"
+    query_string = "delete from response Where group_leader_id={}  and dt_id={};".format(group_leader_id, dt_id)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_allow_update)
+    cur.execute(query_string)
+    cur.execute(query_disallow_update)
+    conn.commit()
+    conn.close()
+    
 
 
 def insert_user_response(group_leader_id, meeting_id, available_times):
+    conn =  mysql.connect()
+    for d in available_times:
+        year, day, month, stime, etime = d.split("-")
+        m_date = '{}-{}-{}'.format(year,day,month)
+        #print("date {} stime {} etime{}".format(m_date, stime, etime))
+        dt_id = get_dt_id(meeting_id,m_date)
+        delete_prevous_response(group_leader_id, dt_id)
     for a in available_times:
         year, day, month, stime, etime = a.split("-")
         m_date = '{}-{}-{}'.format(year,day,month)
         #print("date {} stime {} etime{}".format(m_date, stime, etime))
         dt_id = get_dt_id(meeting_id,m_date)
-        query_string = "insert into response (dt_id, start_time, end_time, group_leader_id) values ({},'{}','{}',{});".format(dt_id, stime, etime, group_leader_id)
+        query_string = "insert into response (dt_id, start_time, end_time, group_leader_id, checked) values ({},'{}','{}',{}, 1);".format(dt_id, stime, etime, group_leader_id)
         #print("query string = {}".format(query_string))
-        conn =  mysql.connect()
         cur = conn.cursor()
         cur.execute(query_string)
         cur_meeting_id = cur.lastrowid
         conn.commit()
-        conn.close()
+    conn.close()
 
 
 def get_upcoming_meetings():
@@ -606,18 +624,17 @@ def get_meeting_info(meeting_uuid):
 def get_responded(meeting_id):
     resp={} #list of who's responded
     date_time=[]
-    query_string="select meeting_date, start_time, end_time, group_name from (select start_time, end_time, group_name, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2 join (select dt_id, meeting_date from dates_times dt) t3 using(dt_id)".format(meeting_id)
+    query_string="select meeting_date, start_time, end_time, group_name, checked from (select start_time, end_time, group_name, checked, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2 join (select dt_id, meeting_date from dates_times dt) t3 using(dt_id)".format(meeting_id)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
     name=""
     respond = cur.fetchall()
     for i in respond:
-        #date_time.append((i[0], i[1], i[2]))
-        if i[3] in resp:
-            resp[i[3]].append((i[0], i[1], i[2]));
-        else:
-            resp[i[3]] = [(i[0], i[1], i[2])];
+        if i[3] in resp: #If the date is already in the dict
+            resp[i[3]].append((i[0], i[1], i[2], i[4]));
+        else: # if date is not in dict
+            resp[i[3]] = [(i[0], i[1], i[2], i[4])];
     conn.close()
     return resp 
 
@@ -630,7 +647,6 @@ def get_creator_email(meeting_uuid):
     conn.close()
     email=meeting[0]
     return email
-    
 
 
 
