@@ -272,11 +272,7 @@ def respond_meeting():
     user_name = request.form.get('user_name')
     available_times = request.form.getlist('available_times')
     available_times = [x.encode('ascii','ignore') for x in available_times] #convert from unicode to str
-    #print("Username: " + user_name)
-    #print("Available times: ", available_times)
     user_id= group_leader_email_to_id(user_name)
-    #print("\n\n user name {} to user id {}".format(user_name, user_id))
-    #print("resp id {}".format(response_meeting))
     insert_user_response(user_id ,response_meeting, available_times)
     m_id=uuid_to_meeting_id(response_meeting); #meeting_id here is uuid_url, shoudl change.
     num_not_resp = get_num_non_responded(m_id)
