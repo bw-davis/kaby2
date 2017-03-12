@@ -269,6 +269,7 @@ def newmeeting_action():
                 conn.commit()
     conn.close()
     link = "http://ix.cs.uoregon.edu:5951/respond/" + uuid_url
+    #link = "http://127.0.0.1:5000/respond/" + uuid_url
     send_message("You've been invited", link, email_list)
     get_upcoming_meetings()
     get_past_meetings()
@@ -291,6 +292,7 @@ def respond_meeting():
     num_not_resp = get_num_non_responded(m_id)
     email_list=["ahill7@uoregon.edu"]
     link="http://ix.cs.uoregon.edu:5951/view_meeting/" + response_meeting
+    #link="http://127.0.0.1:5000/view_meeting/" + response_meetingh
     #print("\n\n number not responded = {} \n\n").format(num_not_resp);
     if(num_not_resp == 0):
         #print("email prfessor")
