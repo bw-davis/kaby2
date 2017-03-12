@@ -470,34 +470,37 @@ def get_dt_id(meeting_id, meeting_date):
     #print("\n\n leader = {} \n\n".format(leader))
     return leader[0];
 
-def delete_prevous_response(group_leader_id, dt_id):
+def delete_prevous_response(available_times, meeting_id, group_leader_id):
     query_allow_update ="SET SQL_SAFE_UPDATES = 0;"
     query_disallow_update ="SET SQL_SAFE_UPDATES = 1;"
-    query_string = "delete from response Where group_leader_id={}  and dt_id={};".format(group_leader_id, dt_id)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_allow_update)
-    cur.execute(query_string)
+    for d in available_times:
+        cur = conn.cursor()
+        year, day, month, stime, etime = d.split("-")
+        m_date = '{}-{}-{}'.format(year,day,month)
+        #print("date {} stime {} etime{}".format(m_date, stime, etime))
+        dt_id = get_dt_id(meeting_id,m_date)
+        query_string = "delete from response Where group_leader_id={}  and dt_id={};".format(group_leader_id, dt_id)
+        cur.execute(query_string)
+        conn.commit()
+
+    cur = conn.cursor()
     cur.execute(query_disallow_update)
-    conn.commit()
     conn.close()
     
 
 
 def insert_user_response(group_leader_id, meeting_id, available_times):
     conn =  mysql.connect()
-    for d in available_times:
-        year, day, month, stime, etime = d.split("-")
-        m_date = '{}-{}-{}'.format(year,day,month)
-        #print("date {} stime {} etime{}".format(m_date, stime, etime))
-        dt_id = get_dt_id(meeting_id,m_date)
-        delete_prevous_response(group_leader_id, dt_id)
+    delete_prevous_response(available_times, meeting_id, group_leader_id)
     for a in available_times:
         year, day, month, stime, etime = a.split("-")
         m_date = '{}-{}-{}'.format(year,day,month)
         #print("date {} stime {} etime{}".format(m_date, stime, etime))
         dt_id = get_dt_id(meeting_id,m_date)
-        query_string = "insert into response (dt_id, start_time, end_time, group_leader_id, checked) values ({},'{}','{}',{}, 1);".format(dt_id, stime, etime, group_leader_id)
+        query_string = "insert into response (dt_id, start_time, end_time, group_leader_id, checked) values ({},'{}','{}',{}, 0);".format(dt_id, stime, etime, group_leader_id)
         #print("query string = {}".format(query_string))
         cur = conn.cursor()
         cur.execute(query_string)
