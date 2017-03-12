@@ -495,18 +495,26 @@ def delete_prevous_response(available_times, meeting_id, group_leader_id):
 def insert_user_response(group_leader_id, meeting_id, available_times):
     conn =  mysql.connect()
     delete_prevous_response(available_times, meeting_id, group_leader_id)
-    for a in available_times:
-        year, day, month, stime, etime = a.split("-")
-        m_date = '{}-{}-{}'.format(year,day,month)
-        #print("date {} stime {} etime{}".format(m_date, stime, etime))
-        dt_id = get_dt_id(meeting_id,m_date)
-        query_string = "insert into response (dt_id, start_time, end_time, group_leader_id, checked) values ({},'{}','{}',{}, 0);".format(dt_id, stime, etime, group_leader_id)
-        #print("query string = {}".format(query_string))
-        cur = conn.cursor()
-        cur.execute(query_string)
-        cur_meeting_id = cur.lastrowid
-        conn.commit()
-    conn.close()
+    try:
+        for a in available_times:
+            year, day, month, stime, etime = a.split("-")
+            m_date = '{}-{}-{}'.format(year,day,month)
+            #print("date {} stime {} etime{}".format(m_date, stime, etime))
+            dt_id = get_dt_id(meeting_id,m_date)
+            query_string = "insert into response (dt_id, start_time, end_time, group_leader_id, checked) values ({},'{}','{}',{}, 0);".format(dt_id, stime, etime, group_leader_id)
+            #print("query string = {}".format(query_string))
+            cur = conn.cursor()
+            try:
+                cur.execute(query_string)
+                cur_meeting_id = cur.lastrowid
+                conn.commit()
+            except:
+                e = sys.exc_info()[0]
+                write_to_page("<p> Derror: %s</p>" %e)
+
+
+    finally:
+        conn.close()
 
 
 def get_upcoming_meetings():
