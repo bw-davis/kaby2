@@ -97,6 +97,8 @@ def logout():
 
 @app.route('/home')
 def home():
+    get_upcoming_meetings()
+    get_past_meetings()
     return render_template('index.html', meetings=meetings, past_meetings=past_meetings) 
 
 
@@ -158,22 +160,20 @@ def thanks():
 @app.route('/login_action', methods=['POST'])
 def login_action():
     #print("I'm in login_action")
-    name = request.form.get('user_name')
+    email = request.form.get('user_name')
     passwd = "{}".format(request.form.get('password'))
     conn =  mysql.connect()
     cur = conn.cursor()
-    query_string = "SELECT password from user where fname='{}'".format(name)
+    query_string = "SELECT password from user where email='{}'".format(email)
     cur.execute(query_string)
     rows = cur.fetchall()
+    print("\n\n\n  rows={}".format(rows))
     for row in rows:
+        print("\n\n\n  password={}".format(row[0]))
         if (row[0]==passwd):
-            #print("passowords Match")
-            #print(request.form.get('user_name'))
-            #print('name')
-            session['username'] = name
+            print("matches")
+            session['username'] = email 
             conn.close()
-            get_upcoming_meetings()
-            #get_past_meetings()
             return flask.redirect(flask.url_for("home"))
         else:
             print("row{} does not equal password{}".format(row, passwd))
@@ -182,23 +182,15 @@ def login_action():
 
 @app.route('/contact_action', methods=['POST'])
 def contact_action():
-    #flash('You did someting here')
     group_name = request.form.get('group_name')
     email_address = request.form.get('email_address')
-    #print("group_name");
-    #print(group_name);
-    #print("email_address:");
-    #print(email_address);
     conn =  mysql.connect()
     cur = conn.cursor()
     query_string = "INSERT INTO `kaby`.`group_leader` (`group_leader_email`, `group_name`) VALUES ('{}', '{}');".format(email_address,group_name)
-    #print(query_string)
     cur.execute(query_string)
     conn.commit()
     conn.close()
     return flask.redirect(flask.url_for("home"))
-    #return flask.redirect(flask.url_for("newContact"))
-    #return render_template('newContact.html') 
 
 
 
@@ -214,7 +206,6 @@ def form_action():
     date = request.form.get('date')
     dates = date.split(",");
     num_dates = len(dates)
-    #print("num dates entered: {}".format(num_dates))
     for d in dates:
         print ("date:{}".format(d))
     name = request.form.get('mName')
@@ -223,8 +214,7 @@ def form_action():
     length_min= request.form.get('meeting_len')
     print("length : {}".format(length_min));
     uuid_url = get_uuid()
-    insert_meeting(loc, desc, length_min, uuid_url, name)
-    #print ("row id : {}".format(cur_meeting_id));
+    insert_meeting(loc, desc, length_min, uuid_url, name, session['username'])
     leaders_to_meet = request.form.getlist('dd2');
     for l in leaders_to_meet:
         #print("email {}".format(l));
@@ -290,7 +280,8 @@ def respond_meeting():
     insert_user_response(user_id ,response_meeting, available_times)
     m_id=uuid_to_meeting_id(response_meeting); #meeting_id here is uuid_url, shoudl change.
     num_not_resp = get_num_non_responded(m_id)
-    email_list=["ahill7@uoregon.edu"]
+    email=get_creator_email(response_meeting);
+    email_list=[email]
     link="http://ix.cs.uoregon.edu:5951/view_meeting/" + response_meeting
     #link="http://127.0.0.1:5000/view_meeting/" + response_meetingh
     #print("\n\n number not responded = {} \n\n").format(num_not_resp);
@@ -303,9 +294,7 @@ def respond_meeting():
 
 
 #################
-#
-# Helper functions to be used by Flask 
-#
+## Helper functions to be used by Flask 
 #################
 
 
@@ -367,9 +356,9 @@ def split_into_intervals(date, st, et, meeting_len):
 
 
 #################
-# MySQL query functions
-# Some are no longer being used
+## MySQL query functions
 ################
+
 
 def add_to_respond_meeting(leader_id, meeting_id):
 	#print("adding to respond_meeting table")
@@ -393,9 +382,9 @@ def set_response(leader):
     add_to_respond_meeting( leader_to_add,cur_meeting_id);
 
 
-def insert_meeting(loc, desc, length_min, uuid_url, meeting_name):
+def insert_meeting(loc, desc, length_min, uuid_url, meeting_name, creator_email):
 	global cur_meeting_id 
-	query_string = "insert into meetings (meeting_id, location, description, length, uuid, meeting_name) values ({}, '{}', '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url, meeting_name)
+	query_string = "insert into meetings (meeting_id, location, description, length, uuid, meeting_name, creator_email) values ({}, '{}', '{}', '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url, meeting_name, creator_email)
 	conn =  mysql.connect()
 	cur = conn.cursor()
 	cur.execute(query_string)
@@ -515,7 +504,7 @@ def get_upcoming_meetings():
 
 
 def get_past_meetings():
-    query_string ="select * from dates_times join meetings using( meeting_id) where meeting_date < cast(now() as date);"
+    query_string ="select * from dates_times join meetings using( meeting_id) where meeting_date < cast(now() as date) group by (meeting_id);"
     global past_meetings 
     past_meetings=[]
     conn =  mysql.connect()
@@ -606,7 +595,7 @@ def get_num_non_responded(meeting_uuid):
 
 
 def get_meeting_info(meeting_uuid):
-    query_string="select location, meeting_name, description from meetings where uuid='{}'; ".format(meeting_uuid)
+    query_string="select location, meeting_name, description from meetings where uuid='{}';".format(meeting_uuid)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
@@ -632,11 +621,21 @@ def get_responded(meeting_id):
     conn.close()
     return resp 
 
+def get_creator_email(meeting_uuid):
+    query_string="select creator_email from meetings where uuid='{}';".format(meeting_uuid)
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_string)
+    meeting= cur.fetchone()
+    conn.close()
+    email=meeting[0]
+    return email
+    
+
+
 
 #################
-#
-# Favicon function rendering
-#
+## Favicon function rendering
 #################
 
 @app.route('/favicon.ico')
