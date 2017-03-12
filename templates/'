@@ -119,10 +119,21 @@
                 <div class="col-sm-10">                                                                    
                     <div class="row" content>
                         <div class="col-sm-1 text-right">
-                        <input type="checkbox" onchange="setChange('{{loop.index}}',this)" class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}">
+                        <input type="checkbox" onchange="setChange('{{loop.index}}',this)" class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}" >
 
                         </div>
-                        <label id="{{loop.index}}" class="col-sm-3 col-form-label text-center">{{ date }} {{ st }} - {{ et }}</label>
+                        
+                        <div class="row">
+                        <div class="container">
+                        <div id="{{loop.index}}" class="col-sm-3">
+                           
+                           <div class="col-sm-1">{{ date }}</div>   
+                           <div class="col-sm-2 text-right">  {{ st }} - {{ et }}</div>
+
+                        </div>
+                        </div>
+
+
                     </div>
                 </div>
             {% endfor %}
