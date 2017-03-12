@@ -26,6 +26,32 @@
         max-width: 1100px;
     }
   </style>
+  <script>
+
+$(document).ready(function(){
+    $("#myBtn6").click(function(){
+        var checkflag = false;
+        var arr=document.getElementsByName("user_name");
+        var label6 = document.getElementById("lb6");
+        //alert(arr.length)
+        for(var i=0;i<arr.length;i++){
+            if(arr[i].checked){
+                checkflag = true;
+            }
+        }
+
+        if(checkflag){
+            $("#myModal6").modal();
+        }
+        else{
+            //alert("im herer");
+            label6.style.display= "inline-block";
+        }
+
+
+    });
+});
+</script>
 </head>
 <!--
     Hello, please respond to this invitation. 
@@ -55,14 +81,18 @@
 	<hr>
     <!-- /HEADER -->
 
-    <form action="/respond_meeting" method="post">
+    <form name="myForm6"action="/respond_meeting" method="post">
         <div class="container text-center">
             <div class="row content">
 			    <div class="col-sm-9 text-left">
                     <h2>You have been invited to a meeting</h2>
-                    <h3>Who are you?</h3>                                                                    
+                    <h3>Who are you?</h3> 
+
+                    <label  class="alert alert-danger" id = "lb6" style="display:none">Please chooes who you are!</label>
+                    <br>                                                                   
                     {% for name in names %}
                         <input type="radio" class="user_name" name="user_name" value="{{ name }}" id="{{ name }}">
+
                         <label for="{{ name }}"> {{ name }} </label>  
                         <br>
                     {% endfor %}
@@ -100,10 +130,32 @@
                         <br>
                     {% endfor %}
                     <br>
-                    <input type="submit" class="btn btn-success" id="submit_times" value="I'm available these times">
+                    <!--input type="submit" class="btn btn-success" id="submit_times" value="I'm available these times">-->
+                    <button type="button" class="btn btn-success" id="myBtn6">I'm available these times</button>
                 </div>
             </div>
         </div>
+
+
+        <div class="modal fade" id="myModal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Confirm</h4>
+              </div>
+              <div class="modal-body">
+                Do you want to submit your available time?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary"></input>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
     </form>
   <br>
   <br>
