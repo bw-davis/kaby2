@@ -81,7 +81,6 @@ def before_action():
             else:
                 print('in session!!')
 
-
 ######
 # Routing Functions
 ######
