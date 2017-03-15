@@ -160,8 +160,8 @@ def thanks():
 @app.route('/login_action', methods=['POST'])
 def login_action():
     #print("I'm in login_action")
-    email = request.form.get('user_name')
-    passwd = "{}".format(request.form.get('password'))
+    email = request.form.get('user_name').strip("'");
+    passwd = "{}".format(request.form.get('password').strip("'"))
     conn =  mysql.connect()
     cur = conn.cursor()
     query_string = "SELECT password from user where email='{}'".format(email)
@@ -180,10 +180,11 @@ def login_action():
     conn.close()
     return flask.redirect(flask.url_for("login"))
 
+
 @app.route('/contact_action', methods=['POST'])
 def contact_action():
-    group_name = request.form.get('group_name')
-    email_address = request.form.get('email_address')
+    group_name = request.form.get('group_name').strip("'")
+    email_address = request.form.get('email_address').strip("'")
     conn =  mysql.connect()
     cur = conn.cursor()
     query_string = "INSERT INTO `kaby`.`group_leader` (`group_leader_email`, `group_name`) VALUES ('{}', '{}');".format(email_address,group_name)
@@ -208,9 +209,9 @@ def form_action():
     num_dates = len(dates)
     for d in dates:
         print ("date:{}".format(d))
-    name = request.form.get('mName')
-    desc = request.form.get('desc')
-    loc= request.form.get('loc')
+    name = request.form.get('mName').strip("'")
+    desc = request.form.get('desc').strip("'")
+    loc= request.form.get('loc').strip("'")
     length_min= request.form.get('meeting_len')
     print("length : {}".format(length_min));
     uuid_url = get_uuid()
