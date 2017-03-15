@@ -48,7 +48,7 @@
 	<br>
 	<br>
 
-		<form action = "contact_action"   method="post">
+		<form action = "contact_action" name= "myformcontact" method="post">
 		<div class="form-group row text-left" >
 		 	<label for="example-text-input" class="col-sm-2 col-form-label">Group name</label>
 			<div class="col-sm-7">
@@ -61,8 +61,8 @@
 			<div class="col-sm-7">
 				<input class="form-control" id="Exit" name="email_address" placeholder="example@uoregon.com" type="text" autocomplete="off"/>
 		 	</div>
-		 	<label  class="col-sm-3 col-form-label text-left" id = "lb2" style="display:none">Please enter a valid email address!
-		 	</label>
+		 	<label  class="col-sm-3 col-form-label text-left" id = "lb2" style="display:none">Please enter a valid email address!</label>
+		 	<label  class="col-sm-3 col-form-label text-left" id = "lb3" style="display:none">The email address has already existed!</label>
 		</div>
 		
 		<div class="container">
@@ -92,8 +92,9 @@
 		        Do you want to add this contact?
 		      </div>
 		      <div class="modal-footer">
+		      	<button type="button" class="btn btn-success"  id="myBtns">Submit</button>
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <input type="submit" class="btn btn-primary"></input>
+		        <!--input type="submit" class="btn btn-primary"></input>-->
 		      </div>
 		    </div>
 		  </div>
@@ -113,19 +114,38 @@ $(document).ready(function(){
     	var re_name = /\S+/
     	var re_email = /([0-9A-z]+)([@]{1})([0-9A-z]+)([.]+)([0-9A-z]+)/
     	var re = /(?:\d{3}|\(\d{3}\))([-\/\.])\d{3}\1\d{4}/
+    	var depulicate = false;
 
     	var inputVal1 = document.getElementById("John");
     	var inputVal2 = document.getElementById("Exit");
     	var label1 = document.getElementById("lb1");
     	var label2 = document.getElementById("lb2");
+    	var label3 = document.getElementById("lb3");
     	var g_name =document.getElementById("John").value;
     	var g_email=document.getElementById("Exit").value;
-
+		//alert("checkpoint1");
+    	{% for e in emaillist%}
+    		var dbemail = "{{e}}".split("&#39;")[1];
+    		if (dbemail==g_email&&re_email.exec(g_email)){
+    			//alert(dbemail);
+    			//alert("{{e}}");
+				depulicate = true;
+    		}
+    		
+        {% endfor %}
+		//alert("checkpoint2");
     	
-    	if(re_name.exec(g_name)&&re_email.exec(g_email)){
-    		$("#myModal").modal();
+    	if(re_name.exec(g_name)&&re_email.exec(g_email)&&!depulicate){
+    		inputVal1.style.backgroundColor = "#FFFFFF";
+	      	label1.style.display= "none";
+	      	inputVal2.style.backgroundColor = "#FFFFFF";
+		    label2.style.display= "none";
+		    label3.style.display= "none";
+			$("#myModal").modal();
     	}
+
     	else{
+    		//alert("checkpoint3");
 	    	if (!re_name.exec(g_name)){
 	    		inputVal1.style.backgroundColor = "#FF9A9A";
 	      		label1.style.display= "inline-block";
@@ -134,18 +154,36 @@ $(document).ready(function(){
 	    		inputVal1.style.backgroundColor = "#FFFFFF";
 	      		label1.style.display= "none";
 	    	}
-
+			//alert("checkpoint4");
 
 			if (!re_email.exec(g_email)){
+
 				inputVal2.style.backgroundColor = "#FF9A9A";
 	      		label2.style.display= "inline-block";
+				label3.style.display= "none";
 			}
 			else{
-				inputVal2.style.backgroundColor = "#FFFFFF";
-	      		label2.style.display= "none";
+					if(depulicate){
+						inputVal2.style.backgroundColor = "#FF9A9A";
+						label2.style.display= "none";
+	      				label3.style.display= "inline-block";
+					}
+					else{
+						inputVal2.style.backgroundColor = "#FFFFFF";
+		      			label2.style.display= "none";
+					}
+					
 			}
+			//alert("checkpoint5");
 		}
 
+    });
+});
+$(document).ready(function(){
+    $("#myBtns").click(function(){
+    	//alert("subit succsss");
+    	document.myformcontact.submit();
+	
 
     });
 });
