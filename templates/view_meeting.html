@@ -118,6 +118,7 @@
             {% for date, st, et, checked in times %}
                 <div class="col-sm-10">                                                                    
                     <div class="row" content>
+                        {% if date != None %}
                         <div class="col-sm-1 text-right">
                         {% if checked == 1 %}
                             <input type="checkbox"  class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}" checked>
@@ -125,7 +126,13 @@
                             <input type="checkbox"  class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}">
                         {% endif %}
                         </div>
-                        <label id="{{name}}{{loop.index}}" class="col-sm-3 col-form-label text-center">{{ date }} {{ st }} - {{ et }}</label>
+                        <label id="{{name}}{{loop.index}}" class="col-sm-3 col-form-label text-left">{{ date }} {{ st }} - {{ et }}</label>
+                        {% else %}
+                        <div class="col-sm-1 text-right"></div>
+                        <div class="col-sm-9 text-left">
+                        <label id="{{name}}{{loop.index}}" class="col-sm-9 col-form-label text-left">No available times to meet!</label>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}

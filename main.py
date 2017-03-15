@@ -235,6 +235,7 @@ def form_action():
         email_list.append(l);
         set_response(l);
     print("im here!!!!!!!!!!");
+    dates.sort();
     return render_template('time_picker.html', dates=dates,length_min0=length_min) 
 
 
@@ -477,7 +478,7 @@ def group_leader_email_to_id(group_leader_email):
 
 def get_dt_id(meeting_id, meeting_date):
     #print("id {} date {}".format(meeting_id, meeting_date));
-    query_string = "select * from meetings join dates_times using (meeting_id) where uuid='{}' and meeting_date='{}'".format(meeting_id, meeting_date)
+    query_string = "select * from meetings join dates_times using (meeting_id) where uuid='{}'".format(meeting_id)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
@@ -527,6 +528,7 @@ def insert_user_response(group_leader_id, meeting_id, available_times):
             #print("query string = {}".format(query_string))
             cur = conn.cursor()
             try:
+                print("\n\n queyr = {}".format(query_string))
                 cur.execute(query_string)
                 cur_meeting_id = cur.lastrowid
                 conn.commit()
@@ -656,7 +658,7 @@ def get_meeting_info(meeting_uuid):
 def get_responded(meeting_id):
     resp={} #list of who's responded
     date_time=[]
-    query_string="select meeting_date, start_time, end_time, group_name, checked from (select meeting_date, start_time, end_time, group_name, checked, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2;".format(meeting_id)
+    query_string="select meeting_date, start_time, end_time, group_name, checked from (select meeting_date, start_time, end_time, group_name, checked, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2 order by (meeting_date);".format(meeting_id)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
