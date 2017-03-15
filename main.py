@@ -285,7 +285,12 @@ def respond_meeting():
     global response_meeting
     user_name = request.form.get('user_name')
     available_times = request.form.getlist('available_times')
-    available_times = [x.encode('ascii','ignore') for x in available_times] #convert from unicode to str
+    if (not available_times):
+        available_times=['0000-00-00-00:00:00-00:00:00']
+    else:
+        available_times = [x.encode('ascii','ignore') for x in available_times] #convert from unicode to str
+    print("\n\n")
+    print(available_times)
     user_id= group_leader_email_to_id(user_name)
     insert_user_response(user_id ,response_meeting, available_times)
     m_id=uuid_to_meeting_id(response_meeting); #meeting_id here is uuid_url, shoudl change.
@@ -478,6 +483,8 @@ def get_dt_id(meeting_id, meeting_date):
     leader = cur.fetchone()
     conn.close()
     #print("\n\n leader = {} \n\n".format(leader))
+    if (not leader):
+        return None
     return leader[0];
 
 def delete_prevous_response(available_times, meeting_id, group_leader_id):
@@ -492,6 +499,9 @@ def delete_prevous_response(available_times, meeting_id, group_leader_id):
         m_date = '{}-{}-{}'.format(year,day,month)
         #print("date {} stime {} etime{}".format(m_date, stime, etime))
         dt_id = get_dt_id(meeting_id,m_date)
+        if(not dt_id):
+            conn.close()
+            return
         query_string = "delete from response Where group_leader_id={}  and dt_id={};".format(group_leader_id, dt_id)
         cur.execute(query_string)
         conn.commit()
@@ -509,9 +519,10 @@ def insert_user_response(group_leader_id, meeting_id, available_times):
         for a in available_times:
             year, day, month, stime, etime = a.split("-")
             m_date = '{}-{}-{}'.format(year,day,month)
+            print("\n\nm_date {}| stime ={} | etime={}".format(m_date, stime, etime))
             #print("date {} stime {} etime{}".format(m_date, stime, etime))
             dt_id = get_dt_id(meeting_id,m_date)
-            query_string = "insert into response (dt_id, start_time, end_time, group_leader_id, checked) values ({},'{}','{}',{}, 0);".format(dt_id, stime, etime, group_leader_id)
+            query_string = "insert into response (dt_id, start_time, end_time, group_leader_id, checked, meeting_date) values ({},'{}','{}',{}, 0, '{}');".format(dt_id, stime, etime, group_leader_id, m_date)
             #print("query string = {}".format(query_string))
             cur = conn.cursor()
             try:
@@ -519,8 +530,7 @@ def insert_user_response(group_leader_id, meeting_id, available_times):
                 cur_meeting_id = cur.lastrowid
                 conn.commit()
             except:
-                e = sys.exc_info()[0]
-                write_to_page("<p> Derror: %s</p>" %e)
+                print("caught error")
 
 
     finally:
@@ -645,7 +655,7 @@ def get_meeting_info(meeting_uuid):
 def get_responded(meeting_id):
     resp={} #list of who's responded
     date_time=[]
-    query_string="select meeting_date, start_time, end_time, group_name, checked from (select start_time, end_time, group_name, checked, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2 join (select dt_id, meeting_date from dates_times dt) t3 using(dt_id)".format(meeting_id)
+    query_string="select meeting_date, start_time, end_time, group_name, checked from (select meeting_date, start_time, end_time, group_name, checked, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2;".format(meeting_id)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
