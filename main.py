@@ -82,6 +82,10 @@ def before_action():
                 print('in session!!')
 
 
+######
+# Routing Functions
+######
+
 @app.route('/')
 @app.route('/login')
 def login():
