@@ -115,17 +115,15 @@ $(document).ready(function(){
                             {% endif %}
                             {% if dict.update({'last_date': cur_date}) %} {% endif %}
                         <div class="row">
-                        <div class="container">
-                        <div class="col-sm-10">
-                        <div class="col-sm-1"> </div>
-                        <div class="col-sm-9 text-left">
-                        <!--input type="checkbox" class="available_times " name="available_times" value="{{date}}-{{st}}-{{et}}" id="{{loop.index}}2">
-                        <label for="{{loop.index}}" > {{ st }} - {{ et }} </label> -->
-                        <input type="checkbox" name="available_times" value="{{date}}-{{st}}-{{et}}" /><span id="{{loop.index}}" > {{ st }} - {{ et }} </span><br/>
-                            
-                        </div>
-                        </div>
-                        </div>
+                            <div class="container">
+                                <div class="col-sm-10">
+                                    <div class="col-sm-1"> 
+                                    </div>
+                                        <div class="col-sm-9 text-left">
+                                            <input type="checkbox" name="available_times" value="{{date}}-{{st}}-{{et}}" /><span id="{{loop.index}}" > {{ st }} - {{ et }} </span><br/>
+                                        </div>
+                                </div>
+                            </div>
                         </div>
                         <br>
                     {% endfor %}

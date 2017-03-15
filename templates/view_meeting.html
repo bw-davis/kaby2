@@ -64,6 +64,7 @@
 	<br>
 	<br>
     <!-- /HEADER -->
+    <form mehtod="post">
     <div class="form-group row text-center" >                                                      
         <div class="container">
             <div class="col-sm-10">                                                                    
@@ -121,9 +122,9 @@
                         {% if date != None %}
                         <div class="col-sm-1 text-right">
                         {% if checked == 1 %}
-                            <input type="checkbox"  class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}" checked>
+                            <input type="checkbox" onchange="setChange('{{name}}{{loop.index}}',this)" name="name1" class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}" checked>
                         {% else %}
-                            <input type="checkbox"  class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}">
+                            <input type="checkbox" onchange="setChange('{{name}}{{loop.index}}',this)" class="available_times" name="available_times" value="{{date}}-{{st}}-{{et}}">
                         {% endif %}
                         </div>
                         <label id="{{name}}{{loop.index}}" class="col-sm-3 col-form-label text-left">{{ date }} {{ st }} - {{ et }}</label>
@@ -153,7 +154,49 @@
             </div>
             {% endfor %}
         </div>
+
+
+          <br>
+          <br>
+          <div class="row">
+             <div class="container text-left">
+                <div class="col-sm-10">
+                    <div class="col-sm-3"> 
+                    </div>
+                    <div class="col-sm-7">
+                    <button type="button" class="btn btn-success" id="myBtn6">Save meeting times</button>
+                        </div>
+                 </div>
+             </div>
+          </div>
+
     </div>     
 </div>
+
+
+        <div class="modal fade" id="myModal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Confirm</h4>
+              </div>
+              <div class="modal-body">
+                Do you want to submit your available time?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary"></input>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+</form>
+<br>
+<br>
+<br>
 </body>
 </html>
