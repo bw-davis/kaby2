@@ -113,6 +113,15 @@ $(document).ready(function(){
     });
 });
 
+$(document).ready(function(){
+    $("#myBtnsm").click(function(){
+    	//alert("subit succsss");
+    	document.tpform.submit();
+	
+
+    });
+});
+
 </script>
 
 <!-- Kaby Stylesheet -->
@@ -131,7 +140,7 @@ $(document).ready(function(){
 	<div class="container" id="body-wrapper">
 				<!--<h4>Date fields will be filled in automatically from dates picked above. You need to enter the desired time ranges for each date as a comma seperated list of ranges.</h4>
 				-->
-		<form action="newmeeting_action" method="post">
+		<form action="newmeeting_action" method="post" name = "tpform">
 		<div class="form-group row text-center">
 			<h2> Add time ranges for the dates you selected on the previous page</h2>
 		</div>
@@ -192,8 +201,9 @@ $(document).ready(function(){
 		        Do you want to submit those information?
 		      </div>
 		      <div class="modal-footer">
+		      	<button type="button" class="btn btn-success"  id="myBtnsm">Submit</button>
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <input type="submit" class="btn btn-primary"></input>
+		        <!--input type="submit" class="btn btn-primary"></input>-->
 		      </div>
 		    </div>
 		  </div>
@@ -211,6 +221,7 @@ $(document).ready(function(){
 		        You don't have enough time to host even one meeting!
 		      </div>
 		      <div class="modal-footer">
+
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 		      </div>
 		    </div>
