@@ -35,11 +35,20 @@
 
 
 
-    
 
 $(document).ready(function(){
     $("#myBtn4").click(function(){
-    	var flag = true
+    	//{% for m in length_min%}
+    	//var min=m;
+    	//alert(min);
+    	//{% endfor %}
+    	//alert("checkpoint1");
+    	//var min = {{length_min}};
+    	//alert({{length_min0}});
+		//alert("checkpoint2");
+		var min = {{length_min0}};
+    	var flag = true;
+    	var longenough = false;
     	{% for o in dates%}
     	var re_time = /^([0-1][0-9]|2[0-3])([0-5][0-9])-([0-1][0-9]|2[0-3])([0-5][0-9])(([,][0-1][0-9]|2[0-3])([0-5][0-9])-([0-1][0-9]|2[0-3])([0-5][0-9]))*$/
     	var inputVal0 = document.getElementById("t{{loop.index}}");
@@ -61,6 +70,16 @@ $(document).ready(function(){
     				innerflag = false;
     				flag=false;
     			};
+    			var earlyhour = parseInt(timearray[0].substring(0,2));
+    			var earlyminute = parseInt(timearray[0].substring(2,4));
+    			var latehour = parseInt(timearray[1].substring(0,2));
+    			var lateminute = parseInt(timearray[1].substring(2,4));
+    			var difference = (latehour*60+lateminute)-(earlyhour*60+earlyminute);
+
+    			if (difference>=min)
+    			{
+    				longenough= true;
+    			}
     		}
     	}
 
@@ -77,7 +96,16 @@ $(document).ready(function(){
     	{% endfor %}
 
     	if(flag){
-    		$("#myModal2").modal();
+    		//$("#myModal2").modal();
+    		if(longenough){
+    			$("#myModal2").modal();
+    		}
+    		else
+    		{
+    			$("#myModalw").modal();
+    		}
+    		
+
     	}
 
 
@@ -170,6 +198,25 @@ $(document).ready(function(){
 		    </div>
 		  </div>
 		</div>
+
+
+		<div class="modal fade" id="myModalw" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		  <div class="modal-dialog" role="document">
+		    <div class="alert alert-danger">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">warning</h4>
+		      </div>
+		      <div class="modal-body">
+		        You don't have enough time to host even one meeting!
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
 
 
 		</form>

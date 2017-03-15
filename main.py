@@ -220,7 +220,8 @@ def form_action():
         #print("email {}".format(l));
         email_list.append(l);
         set_response(l);
-    return render_template('time_picker.html', dates=dates) 
+    print("im here!!!!!!!!!!");
+    return render_template('time_picker.html', dates=dates,length_min0=length_min) 
 
 
 @app.route('/newmeeting_action', methods=['POST'])
