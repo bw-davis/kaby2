@@ -55,6 +55,7 @@
 				<input class="form-control" type="text" id = "John" name="group_name" placeholder="Group name" id="example-text-input" autocomplete="off">
 		 	</div>
 		 	<label  class="col-sm-3 col-form-label text-left" id = "lb1" style="display:none">Please enter a group name!</label>
+		 	<label  class="col-sm-3 col-form-label text-left" id = "lb4" style="display:none">The group name has already existed!</label>
 		</div>
 		<div class="form-group row text-left">
 		 	<label for="date" class="col-sm-2 col-form-label text-left">Email address</label>
@@ -114,33 +115,47 @@ $(document).ready(function(){
     	var re_name = /\S+/
     	var re_email = /([0-9A-z]+)([@]{1})([0-9A-z]+)([.]+)([0-9A-z]+)/
     	var re = /(?:\d{3}|\(\d{3}\))([-\/\.])\d{3}\1\d{4}/
-    	var depulicate = false;
+    	var namedepulicate = false;
+    	var emaildepulicate = false;
 
     	var inputVal1 = document.getElementById("John");
     	var inputVal2 = document.getElementById("Exit");
     	var label1 = document.getElementById("lb1");
     	var label2 = document.getElementById("lb2");
     	var label3 = document.getElementById("lb3");
+    	var label4 = document.getElementById("lb4");
     	var g_name =document.getElementById("John").value;
     	var g_email=document.getElementById("Exit").value;
 		//alert("checkpoint1");
+		{% for n in namelist%}
+    		var dbname = "{{n}}".split("&#39;")[1];
+    		if (dbname==g_name&&re_name.exec(g_name)){
+    			//alert(dbemail);
+    			//alert("{{e}}");
+				namedepulicate = true;
+    		}
+    		
+        {% endfor %}
+        //alert("checkpoint11");
     	{% for e in emaillist%}
     		var dbemail = "{{e}}".split("&#39;")[1];
     		if (dbemail==g_email&&re_email.exec(g_email)){
     			//alert(dbemail);
     			//alert("{{e}}");
-				depulicate = true;
+				emaildepulicate = true;
     		}
     		
         {% endfor %}
+		//alert("checkpoint12");
 		//alert("checkpoint2");
     	
-    	if(re_name.exec(g_name)&&re_email.exec(g_email)&&!depulicate){
+    	if(re_name.exec(g_name)&&re_email.exec(g_email)&&!namedepulicate&&!emaildepulicate){
     		inputVal1.style.backgroundColor = "#FFFFFF";
 	      	label1.style.display= "none";
 	      	inputVal2.style.backgroundColor = "#FFFFFF";
 		    label2.style.display= "none";
 		    label3.style.display= "none";
+		    label4.style.display= "none";
 			$("#myModal").modal();
     	}
 
@@ -151,8 +166,16 @@ $(document).ready(function(){
 	      		label1.style.display= "inline-block";
 	    	}
 	    	else{
-	    		inputVal1.style.backgroundColor = "#FFFFFF";
-	      		label1.style.display= "none";
+	    		if(namedepulicate){
+	    			inputVal1.style.backgroundColor = "#FF9A9A";
+					label1.style.display= "none";
+	      			label4.style.display= "inline-block";
+	    		}
+	    		else{
+	    			inputVal1.style.backgroundColor = "#FFFFFF";
+	      			label1.style.display= "none";
+	    		}
+
 	    	}
 			//alert("checkpoint4");
 
@@ -163,7 +186,7 @@ $(document).ready(function(){
 				label3.style.display= "none";
 			}
 			else{
-					if(depulicate){
+					if(emaildepulicate){
 						inputVal2.style.backgroundColor = "#FF9A9A";
 						label2.style.display= "none";
 	      				label3.style.display= "inline-block";
