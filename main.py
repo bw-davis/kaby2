@@ -8,6 +8,7 @@ from datetime import datetime
 import uuid
 import os
 import re
+import operator
 
 
 app = Flask(__name__)
@@ -45,17 +46,6 @@ email_list=[]
 uuid_url="";
 response_meeting="";
 
-def get_meetings():
-	global meetings
-	conn = mysql.connect()
-	cur = conn.cursor()
-	query_string="select * from meetings;"
-	cur.execute(query_string)
-	rows= cur.fetchall()
-	for row in rows:
-		if (row[2] != ""): 
-			meetings.append((row[2], row[4]))
-	conn.close()
 
 def get_group_leaders():
 	global group_leaders 
@@ -133,20 +123,24 @@ def timePage():
 
 @app.route("/view_meeting/<meeting_id>")
 def view_meeting(meeting_id):
+    global cur_meeting_id
     resp={};
     respond=[];
     app.logger.debug("Entering view_meeting")
     meeting_info = get_meeting_info(meeting_id)
     m_id=uuid_to_meeting_id(meeting_id); #meeting_id here is uuid_url, shoudl change.
+    cur_meeting_id=m_id;
     not_resp = get_not_responded(m_id)
     resp = get_responded(m_id)
+    resp_list=[]
     for name, times in resp.iteritems():
-        for date, st, et, checked in times:
-            print("{}, {} - {}".format(date,st,et));
-    meeting_info = get_meeting_info(meeting_id);
+        sorted_time = sorted(times, key=operator.itemgetter(1))
+        sorted_time = sorted(sorted_time, key=operator.itemgetter(0))
+        temp=[name, sorted_time]
+        resp_list.append(temp);
     return render_template('view_meeting.html', title=meeting_info[1],desc=meeting_info[2],
                             location=meeting_info[0], not_responders=not_resp,
-                            responders=resp)
+                            responders=resp_list, dt_id=m_id)
 
 
 @app.route("/respond/<meeting_id>")
@@ -309,6 +303,16 @@ def respond_meeting():
         print("dont email yet")
     return flask.redirect(flask.url_for("thanks"))
 
+
+@app.route('/viewmeeting_action', methods=['POST'])
+def viewmeeting_action():
+    global cur_meeting_id;
+    print("\n\n\n hello there \n\n\n")
+    sel_times = request.form.getlist('sel_times')
+    print("\n\n sel_times = {}".format(sel_times));
+    reset_all_response_check(cur_meeting_id)
+    check_meetings(sel_times)
+    return flask.redirect(flask.url_for("home"))
 
 #################
 ## Helper functions to be used by Flask 
@@ -489,6 +493,40 @@ def get_dt_id(meeting_id, meeting_date):
         return None
     return leader[0];
 
+def reset_all_response_check(dt_id):
+    query_allow_update ="SET SQL_SAFE_UPDATES = 0;"
+    query_disallow_update ="SET SQL_SAFE_UPDATES = 1;"
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_allow_update)
+    query_string="update response set checked=0 where dt_id={};".format(dt_id)
+    cur = conn.cursor()
+    cur.execute(query_string)
+    conn.commit()
+    cur = conn.cursor()
+    cur.execute(query_disallow_update)
+    conn.close()
+
+
+def check_meetings(sel_times):
+    query_allow_update ="SET SQL_SAFE_UPDATES = 0;"
+    query_disallow_update ="SET SQL_SAFE_UPDATES = 1;"
+    conn =  mysql.connect()
+    cur = conn.cursor()
+    cur.execute(query_allow_update)
+    print("\n\n\n sel_time = {}".format(sel_times))
+    for meeting in sel_times:
+        dt_id, name, meeting_date, start_time, end_time = meeting.split(",")
+        query_string="update response set checked=1 where dt_id={} and start_time='{}' and end_time='{}' and group_leader_id = (select  group_leader_id from group_leader where group_name='{}' limit 1) and meeting_date='{}';".format(dt_id, start_time, end_time, name, meeting_date)
+        print(query_string); 
+        cur.execute(query_string)
+        conn.commit()
+
+    cur = conn.cursor()
+    cur.execute(query_disallow_update)
+    conn.close()
+
+
 def delete_prevous_response(available_times, meeting_id, group_leader_id):
     query_allow_update ="SET SQL_SAFE_UPDATES = 0;"
     query_disallow_update ="SET SQL_SAFE_UPDATES = 1;"
@@ -658,7 +696,7 @@ def get_meeting_info(meeting_uuid):
 def get_responded(meeting_id):
     resp={} #list of who's responded
     date_time=[]
-    query_string="select meeting_date, start_time, end_time, group_name, checked from (select meeting_date, start_time, end_time, group_name, checked, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={}) t2 order by (meeting_date);".format(meeting_id)
+    query_string="select meeting_date, start_time, end_time, group_name, checked from (select meeting_date, start_time, end_time, group_name, checked, dt_id from response r join group_leader gl using (group_leader_id)  where dt_id={} order by (start_time)) t2 order by (meeting_date);".format(meeting_id)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
