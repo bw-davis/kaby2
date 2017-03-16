@@ -138,7 +138,7 @@ $(document).ready(function(){
                         {% endif %}
                         </div>
 
-                        <label id="{{name}}{{loop.index}}" class="col-sm-3 col-form-label text-left">{{ date }} {{ st }} - {{ et }}</label>
+                        <label id="{{name}}{{loop.index}}" class="col-sm-3 col-form-label text-left">{{ date }} {{ st[0:5] }} - {{ et[0:5] }}</label>
                         {% else %}
                         <div class="col-sm-1 text-right"></div>
                         <div class="col-sm-9 text-left">
