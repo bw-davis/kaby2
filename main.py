@@ -113,16 +113,26 @@ def newMeeting():
 
 @app.route('/newContact')
 def newContact():
-    conn =  mysql.connect()
-    cur = conn.cursor()
-    query_string = "SELECT group_leader_email FROM kaby.group_leader;"
-    cur.execute(query_string)
-    rows = cur.fetchall()
-    for row in rows:
+    conn1 =  mysql.connect()
+    cur1 = conn1.cursor()
+    query_string1 = "SELECT group_leader_email FROM kaby.group_leader;"
+    cur1.execute(query_string1)
+    rows1 = cur1.fetchall()
+    for row1 in rows1:
             print("******");
-            print(row)
-    conn.close()
-    return render_template('newContact.html', emaillist=rows) 
+            print(row1)
+    conn1.close()
+    conn2 =  mysql.connect()
+    cur2 = conn2.cursor()
+    query_string2 = "SELECT group_name FROM kaby.group_leader;"
+    cur2.execute(query_string2)
+    rows2 = cur2.fetchall()
+    for row2 in rows2:
+            print("******");
+            print(row2)
+    conn2.close()
+
+    return render_template('newContact.html', emaillist=rows1,namelist=rows2) 
 
 
 @app.route('/timePage')
