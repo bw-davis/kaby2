@@ -132,9 +132,9 @@ $(document).ready(function(){
                         {% if date != None %}
                         <div class="col-sm-1 text-right" >
                         {% if checked == 1 %}
-                            <input type="checkbox" name="sel_times" onchange="setChange('{{name}}{{loop.index}}',this)" name="name2" class="available_times" name="available_times" value="{{dt_id}},{{name}},{{date}},{{st}},{{et}}" checked>
+                            <input type="checkbox" name="sel_times"  name="name2" class="available_times" name="available_times" value="{{dt_id}},{{name}},{{date}},{{st}},{{et}}" checked>
                         {% else %}
-                            <input type="checkbox" name="sel_times" onchange="setChange('{{name}}{{loop.index}}',this)" class="available_times" name="available_times" value="{{dt_id}},{{name}},{{date}},{{st}},{{et}}">
+                            <input type="checkbox" name="sel_times"  class="available_times" name="available_times" value="{{dt_id}},{{name}},{{date}},{{st}},{{et}}">
                         {% endif %}
                         </div>
 
@@ -175,7 +175,7 @@ $(document).ready(function(){
                     <div class="col-sm-3"> 
                     </div>
                     <div class="col-sm-7">
-                    <button type="button" class="btn btn-success" id="myBtn6">Save meeting times</button>
+                    <button type="button" class="btn btn-success" id="myBtn6">Save Meeting Times</button>
                         </div>
                  </div>
              </div>
