@@ -1074,7 +1074,7 @@ def get_past_meetings():
     for row in rows:
         #print("\n\n row {} \n\n".format(row));
         if (row[2] != ""): 
-            past_meetings.append((row[6], row[8]))
+            past_meetings.append((row[9], row[8]))
     conn.close();
 
 

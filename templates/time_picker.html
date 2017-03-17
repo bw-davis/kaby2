@@ -156,14 +156,14 @@ $(document).ready(function(){
 					<!--input class="form-control" type="text" value="{{o}}" name="d{{loop.index}}" -->
 					<label for="d{{loop.index}}" class="text-left"> {{o}} </label>
 		 	</div>
-		 		<label for="d{{loop.index}}" class="col-sm-2 col-form-label" style="display:none">Please input a Valid date, without any white space</label>
+		 		<label for="d{{loop.index}}" class="col-sm-2 col-form-label" style="display:none">Please input a valid date, without any white space</label>
 		</div>
 		<div class="form-group row text-left">
 		 	<label for="t{{loop.index}}" class="col-sm-2 col-form-label">Time</label>
 			<div class="col-sm-5">
 				<input class="form-control" type="text" placeholder="0800-0900,1300-1500"  name="t{{loop.index}}" id="t{{loop.index}}">
 		 	</div>
-		 	<label for="d{{loop.index}}" class="col-sm-2 col-form-label" id= "d{{loop.index}}" style="display:none">Please input a Valid time, with out any white space(e.g.0800-0900)</label>
+		 	<label for="d{{loop.index}}" class="col-sm-2 col-form-label" id= "d{{loop.index}}" style="display:none">Please input a valid time, without any white space(e.g.0800-0900,1100-1200)</label>
 		</div>
 		<br>
 		{% endfor %}
@@ -198,9 +198,9 @@ $(document).ready(function(){
 		        <h4 class="modal-title" id="myModalLabel">Confirm</h4>
 		      </div>
 		      <div class="modal-body">
-		        Do you want to submit those information?
+		        Do you want to submit that information?
 		      </div>
-		      <div class="modal-footer">
+		        <div class="modal-footer">
 		      	<button type="button" class="btn btn-success"  id="myBtnsm">Submit</button>
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 		        <!--input type="submit" class="btn btn-primary"></input>-->
