@@ -1,3 +1,13 @@
+"""
+Authors: Andrew Hill, Alex Owen, and Yubo Zhang
+
+This module contains all the logic for the Flask sever. This module is split into the 4 following sections:
+1. Routing functions: Used to render html and jinja2 files, and set up the urls for each page
+2. Post methods: Gets all user input from the website using post method. These function then can call various helper or MySQL query functions
+3. Helper functions: Helper functions called by post methods used to send emails, set up server connection, and parse/handle data from the database
+4. MySQL query functions: Helper function called by post methods to get data from, add data to, or delete data from the MySQL database.
+"""
+
 import flask
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flaskext.mysql import MySQL
@@ -48,6 +58,48 @@ response_meeting="";
 
 
 
+
+
+######
+# Routing Functions
+######
+
+
+'''
+Flask routing function used to change icon in browser tab.
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+    
+    side affects:
+        None
+
+    return:
+        None
+'''
+@app.route('/favicon.ico')
+def favicon():
+    return flask.send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+
+
+
+'''
+Routing function used to check if a user has is logged in or not any time a user tires to load a new page
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Checks if a user is logged in or not, of if a users login time has expired. If a user is not logged in or 
+        have been in active for longer then 10 minutes, they are redirected to the login page. Other wise they can
+        navigate the site freely
+
+    return:
+        None
+'''
+
 @app.before_request
 def before_action():
     session.permanent = True
@@ -60,10 +112,19 @@ def before_action():
             else:
                 print('in session!!')
 
-######
-# Routing Functions
-######
 
+'''
+Routing function used to render the long.html file when some successful logs in
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Renders the login.html file and sets the url for this page
+
+    return:
+        None
+'''
 @app.route('/')
 @app.route('/login')
 def login():
@@ -71,12 +132,37 @@ def login():
     return render_template('login.html') 
 
 
+
+'''
+Routing function used to handle logout button and redirect user to login page
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Logs user out of the session, and redirects them to the login page
+
+    return:
+        None
+'''
 @app.route('/logout')	
 def logout():
     session.clear() 
     return flask.redirect(flask.url_for("login"))
 
 
+'''
+Routing function used to render the index.html file
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Renders the index.html file and sets the url for this page
+
+    return:
+        None
+'''
 @app.route('/home')
 def home():
     get_upcoming_meetings()
@@ -84,12 +170,37 @@ def home():
     return render_template('index.html', meetings=meetings, past_meetings=past_meetings) 
 
 
+
+'''
+Routing function used to render the newMeeting.html file
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Renders the newMeeting.html file and sets the url for this page
+
+    return:
+        None
+'''
 @app.route('/newMeeting')
 def newMeeting():
 	get_group_leaders()
 	return render_template('newMeeting.html',  leaders=group_leaders)
 
 
+'''
+Routing function used to render the newContact.html file
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Renders the newContact.html file and sets the url for this page
+
+    return:
+        None
+'''
 @app.route('/newContact')
 def newContact():
     conn1 =  mysql.connect()
@@ -114,11 +225,35 @@ def newContact():
     return render_template('newContact.html', emaillist=rows1,namelist=rows2) 
 
 
+'''
+Routing function used to render the time_picker.html file
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Renders the time_picker.html file and sets the url for this page
+
+    return:
+        None
+'''
 @app.route('/timePage')
 def timePage():
     return render_template('time_picker.html') 
 
 
+'''
+Routing function used to render the view_meeting.html file
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Renders the view_meeting.html file and sets the url for this page
+
+    return:
+        None
+'''
 @app.route("/view_meeting/<meeting_id>")
 def view_meeting(meeting_id):
     global cur_meeting_id
@@ -141,6 +276,19 @@ def view_meeting(meeting_id):
                             responders=resp_list, dt_id=m_id)
 
 
+
+'''
+Routing function used to render the respond.html file
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Renders the respond.html file and sets the url for this page
+
+    return:
+        None
+'''
 @app.route("/respond/<meeting_id>")
 def respond(meeting_id):
     global response_meeting;
@@ -153,6 +301,19 @@ def respond(meeting_id):
             dts=dates)
 
 
+
+'''
+Routing function used to render the thanks.html file
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Renders the thanks.html file and sets the url for this page
+
+    return:
+        None
+'''
 @app.route("/thanks")
 def thanks():
     return render_template('thanks.html')
@@ -162,6 +323,20 @@ def thanks():
 ## POST METHODS
 #########
 
+
+'''
+Post method used to get all user input from the log in screen and check the database to log in a user or not
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Gets all user input from screen, calls a MySQL query to check if users input email and password match. If they match
+        user is redirected to the home page, if they do not match then user is prompted to enter this info again.
+
+    return:
+        None
+'''
 @app.route('/login_action', methods=['POST'])
 def login_action():
     #print("I'm in login_action")
@@ -186,6 +361,19 @@ def login_action():
     return flask.redirect(flask.url_for("login"))
 
 
+'''
+Post method used to get all user input from the new contact page add this to the database
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Gets all user input from screen, calls a MySQL query to create a new user instance for this user and stores all user info.
+        Javascript checking is done on the HTML page to ensure this user does not already exist in the database.
+
+    return:
+        None
+'''
 @app.route('/contact_action', methods=['POST'])
 def contact_action():
     group_name = request.form.get('group_name').replace("'", "")
@@ -199,7 +387,19 @@ def contact_action():
     return flask.redirect(flask.url_for("home"))
 
 
+'''
+Post method used to get all user input from the new meeting page add this to the database
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
 
+    side affects:
+        Gets all user input from screen, calls a mysql query to create a new meeting instance for this user and stores all user info.
+        Javascript checking is done on the html page to ensure all needed data has been entered and is of the right type and format.
+
+    return:
+        None
+'''
 @app.route('/form_action', methods=['POST'])
 def form_action():
     global dates
@@ -231,6 +431,21 @@ def form_action():
     return render_template('time_picker.html', dates=dates,length_min0=length_min) 
 
 
+
+'''
+Post method used to get all user input from the timepicker page add this to the database
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Gets all user input from screen, calls a mysql query to create a new time date object for all possible time dates
+        on the given date with the given length. Javascript checking is done on the html page to ensure all needed data has 
+        been entered and is of the right type and format.
+
+    return:
+        None
+'''
 @app.route('/newmeeting_action', methods=['POST'])
 def newmeeting_action():
     cntr=0;
@@ -274,6 +489,20 @@ def newmeeting_action():
     return render_template('index.html', meetings=meetings, past_meetings=past_meetings) 
 
 
+'''
+Post method used to get all user input from the respond page add this to the database
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Gets all user input from screen, calls a mysql query to create a new response instance for each possible 
+        meeting time and date the contact responds to. Javascript checking is done on the html page to ensure all needed data has 
+        been entered and is of the right type and format.
+
+    return:
+        None
+'''
 @app.route('/respond_meeting', methods=['POST'])
 def respond_meeting():
     global response_meeting
@@ -302,6 +531,18 @@ def respond_meeting():
     return flask.redirect(flask.url_for("thanks"))
 
 
+'''
+Post method used to get all user input from the view_meeting page add this to the database
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+
+    side affects:
+        Gets all user input from screen, calls a mysql query to to update the checked property for each response the user check.
+
+    return:
+        None
+'''
 @app.route('/viewmeeting_action', methods=['POST'])
 def viewmeeting_action():
     global cur_meeting_id;
@@ -379,7 +620,18 @@ def split_into_intervals(date, st, et, meeting_len):
 ################
 
 
+'''
+Mysql helper gets all the contacts
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
 
+    side affects:
+        populates the group leaders global array with all the contacts stored in the database
+
+    return:
+        None
+'''
 def get_group_leaders():
 	global group_leaders 
 	group_leaders=[]
@@ -393,6 +645,19 @@ def get_group_leaders():
 	conn.close()
 
 
+'''
+Mysql helper: converts a group_leader_email to a group_leader_id an passes that id to the add_to_respond_meeting function 
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        leader_id: unique group leader id
+        meeting_id: unique meeting id
+
+    side affects:
+        inserts this group leader id meeting id into the respond_meeting table
+
+    return:
+        None
+'''
 def add_to_respond_meeting(leader_id, meeting_id):
 	#print("adding to respond_meeting table")
 	query_add_respond = "insert into respond_meeting (issue_ID, group_id) values ({},{})".format(meeting_id, leader_id);
@@ -403,6 +668,18 @@ def add_to_respond_meeting(leader_id, meeting_id):
 	conn.close()
 
 
+'''
+Mysql helper: converts a group_leader_email to a group_leader_id an passes that id to the add_to_respond_meeting function 
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        leader: group leader of contacts email
+
+    side affects:
+        gets the unique group_leader_id for this user and calls add_to_respond_meeting
+
+    return:
+        None
+'''
 def set_response(leader):
     conn2 =  mysql.connect()
     cur2 = conn2.cursor()
@@ -415,6 +692,22 @@ def set_response(leader):
     add_to_respond_meeting( leader_to_add,cur_meeting_id);
 
 
+'''
+Mysql helper: inserts a meeting into the databse
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        loc: string storing the location of a meeting
+        desc: string storing the description of a meetin 
+        lenght_min: int specifying the length of a meeting
+        uuid_url: string storing the unique url for a meeting
+        creator_email: string storing the email of the user who created the email
+
+    side affects:
+        Inserts a new meeting into the database
+
+    return:
+        None
+'''
 def insert_meeting(loc, desc, length_min, uuid_url, meeting_name, creator_email):
 	global cur_meeting_id 
 	query_string = "insert into meetings (meeting_id, location, description, length, uuid, meeting_name, creator_email) values ({}, '{}', '{}', '{}', '{}', '{}', '{}')".format("Null",loc, desc, length_min, uuid_url, meeting_name, creator_email)
@@ -426,6 +719,18 @@ def insert_meeting(loc, desc, length_min, uuid_url, meeting_name, creator_email)
 	conn.close()
 
 
+'''
+Mysql helper: returns an array of all group leader info for all group leaders attending a meeting
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_id: a unique id for a meeting
+
+    side affects:
+        None
+
+    return:
+        all_attendess: array of tuples of all group leader info, for all contacts invited to a meeting.
+'''
 def get_leaders_for_meetingID(uuid_url):
     #uuid_url to meeeting id
     query_string = "select * from meetings where uuid='{}'".format(uuid_url)
@@ -440,6 +745,19 @@ def get_leaders_for_meetingID(uuid_url):
     conn.close()
     return all_attendees
 
+
+'''
+Mysql helper: returns an array of all group leader ids of all group leaders attending a meeting
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_id: a unique id for a meeting
+
+    side affects:
+        None
+
+    return:
+        all_attendess: array of group_leader_ids for all contacts invited to a meeting.
+'''
 def all_contacts_id_for_meeting(meeting_id):
     query_string = "select * from respond_meeting where issue_ID={}".format(meeting_id)
     all_attendees=[];
@@ -456,6 +774,17 @@ def all_contacts_id_for_meeting(meeting_id):
     return all_attendees
 
 
+'''
+Mysql helper: gets all information of a group_leader by their unique group_leader_id
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        group_leader_id: a unique id for a group leader
+    
+    side affects:
+        None
+    return:
+        Tuple of all data about this group leader( id, email, fname, lname, group name);
+'''
 def get_contacts_for_meeting(group_leader_id):
     query_string = "select * from group_leader where group_leader_id={};".format(group_leader_id)
     conn =  mysql.connect()
@@ -466,7 +795,17 @@ def get_contacts_for_meeting(group_leader_id):
     conn.close()
     return attendees[1];
 
-
+'''
+Mysql helper: returns all datetime possibilities for a meeting
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_id: a unique id for a meeting
+    
+    side affects:
+        None
+    return:
+        all_dts: a list of datetime objects representing all possible date time combinations for a given meeting
+'''
 def get_dts(meeting_id):
     query = "select * from dates_times JOIN meetings using(meeting_id) where uuid ='{}'".format(meeting_id)
     conn =  mysql.connect()
@@ -490,6 +829,18 @@ def get_dts(meeting_id):
     return all_dts;
 
 
+'''
+Mysql helper: converts a group_leader_email to their unique id
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        group_leader_email: The group leaders email you want the group leader id for
+    
+    side affects:
+        Adds all contacts available times to the database
+
+    return:
+        None
+'''
 def group_leader_email_to_id(group_leader_email):
     query_string = "select * from group_leader where group_leader_email='{}';".format(group_leader_email)
     conn =  mysql.connect()
@@ -500,6 +851,20 @@ def group_leader_email_to_id(group_leader_email):
     return leader[0];
 
 
+
+'''
+Mysql helper: gets the unique dt_id(date time id) for a specific date and time
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_date: datetime object used to represent one specific date and time for a meeting
+        meeting_id: unique id for meeting the user has responded to
+    
+    side affects:
+        Adds all contacts available times to the database
+
+    return:
+        Returns the leaders who can meet at this time.
+'''
 def get_dt_id(meeting_id, meeting_date):
     #print("id {} date {}".format(meeting_id, meeting_date));
     query_string = "select * from meetings join dates_times using (meeting_id) where uuid='{}'".format(meeting_id)
@@ -513,6 +878,22 @@ def get_dt_id(meeting_id, meeting_date):
         return None
     return leader[0];
 
+
+'''
+Mysql helper: used to check or selected property of a response
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        group_leader_id: unique id for the leader whos responses are being entered
+        meeting_id: unique id for meeting the user has responded to
+        available times: an array of data time objects, that represents when this contact can meet and is to
+                          be inserted into the database.
+    
+    side affects:
+        Adds all contacts available times to the database
+
+    return:
+        None
+'''
 def reset_all_response_check(dt_id):
     query_allow_update ="SET SQL_SAFE_UPDATES = 0;"
     query_disallow_update ="SET SQL_SAFE_UPDATES = 1;"
@@ -528,6 +909,19 @@ def reset_all_response_check(dt_id):
     conn.close()
 
 
+
+'''
+Mysql helper: that stores which which responses were selected on the view_meeting page
+------------------------------------------------------------------------------------------------------------
+    arguments:
+       sel_times: this is an array of all the selected times to be stored in the database
+    
+    side affects:
+        Adds all selected boxes to database
+
+    return:
+        None
+'''
 def check_meetings(sel_times):
     query_allow_update ="SET SQL_SAFE_UPDATES = 0;"
     query_disallow_update ="SET SQL_SAFE_UPDATES = 1;"
@@ -546,6 +940,23 @@ def check_meetings(sel_times):
     cur.execute(query_disallow_update)
     conn.close()
 
+
+
+'''
+Mysql helper: used delete all of a contacts responses to a specific meeting
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        group_leader_id: unique id for the leader whos responses are being entered
+        meeting_id: unique id for meeting the user has responded to
+        available times: an array of data time objects, that represents when this contact can meet and is to
+                          be inserted into the database.
+    
+    side affects:
+        Deletes all entires for the specified contact from the resonse table for the specified meeting.
+
+    return:
+        None
+'''
 
 def delete_prevous_response(available_times, meeting_id, group_leader_id):
     query_allow_update ="SET SQL_SAFE_UPDATES = 0;"
@@ -571,7 +982,21 @@ def delete_prevous_response(available_times, meeting_id, group_leader_id):
     conn.close()
     
 
+'''
+Mysql helper: used to all users responses of availability into the database
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        group_leader_id: unique id for the leader who's responses are being entered
+        meeting_id: unique id for meeting the user has responded to
+        available times: an array of data time objects, that represents when this contact can meet and is to
+                          be inserted into the database.
+    
+    side affects:
+        Adds all contacts available times to the database
 
+    return:
+        None
+'''
 def insert_user_response(group_leader_id, meeting_id, available_times):
     conn =  mysql.connect()
     delete_prevous_response(available_times, meeting_id, group_leader_id)
@@ -598,6 +1023,19 @@ def insert_user_response(group_leader_id, meeting_id, available_times):
         conn.close()
 
 
+'''
+Mysql helper: function that gets all the upcoming meetings
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+    
+    side affects:
+        Populates the array(meetings) which used to populate the upcoming meetings table on the home page
+
+    return:
+        None
+'''
+
 def get_upcoming_meetings():
     query_string ="select * from dates_times join meetings using(meeting_id) where meeting_date >= cast(now() as date) group by (meeting_id);"
     global meetings 
@@ -613,6 +1051,19 @@ def get_upcoming_meetings():
     conn.close();
 
 
+
+'''
+Mysql helper: function that gets all the past meetings
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        None
+    
+    side affects:
+        Populates the array(pst_meetings) which used to populate the past meetings table on the home page
+
+    return:
+        None
+'''
 def get_past_meetings():
     query_string ="select * from dates_times join meetings using( meeting_id) where meeting_date < cast(now() as date) group by (meeting_id);"
     global past_meetings 
@@ -629,7 +1080,7 @@ def get_past_meetings():
 
 
 '''
-Mysql helper function that takes a meetings unique uuid_url and converts it to that meetins primary key(meeting_id)
+Mysql helper: function that takes a meetings unique uuid_url and converts it to that meetings primary key(meeting_id)
 ------------------------------------------------------------------------------------------------------------
     arguments:
         meeting_uuid: A meetings unique uuid created url
@@ -638,7 +1089,7 @@ Mysql helper function that takes a meetings unique uuid_url and converts it to t
         None
 
     return:
-        cur_meeting_id: An int, the unique primary key id for the coresposnding uuid_url
+        cur_meeting_id: An int, the unique primary key id for the corresponding uuid_url
 '''
 def uuid_to_meeting_id(meeting_uuid):
     query_string = "select meeting_id from meetings where uuid='{}'".format(meeting_uuid)
@@ -651,7 +1102,7 @@ def uuid_to_meeting_id(meeting_uuid):
 
 
 '''
-Mysql helper function that gets the list of all contacts who have NOT respnded to the meeting request yet.
+Mysql helper function that gets the list of all contacts who have NOT responded to the meeting request yet.
 ------------------------------------------------------------------------------------------------------------
     arguments:
         meeting_uuid: A meetings unique uuid created url
@@ -679,7 +1130,7 @@ def get_not_responded(meeting_uuid):
 
 
 '''
-Mysql helper function that gets the number of all contacts who have NOT respnded to the meeting request yet.
+Mysql helper function that gets the number of all contacts who have NOT responded to the meeting request yet.
 ------------------------------------------------------------------------------------------------------------
     arguments:
         meeting_uuid: A meetings unique uuid created url
@@ -703,7 +1154,18 @@ def get_num_non_responded(meeting_uuid):
     return non_respond[0] 
 
 
+'''
+Mysql helper: function that get all the meeting info property for a specific meeting
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_uuid: A meetings unique uuid created url
+    
+    side affects:
+        None
 
+    return:
+        returns a tuple of strings (location, meeting name, description), stores all the info about the requested meeting
+'''
 def get_meeting_info(meeting_uuid):
     query_string="select location, meeting_name, description from meetings where uuid='{}';".format(meeting_uuid)
     conn =  mysql.connect()
@@ -713,6 +1175,20 @@ def get_meeting_info(meeting_uuid):
     conn.close()
     return (cur_meeting[0], cur_meeting[1], cur_meeting[2])
 
+
+
+'''
+Mysql helper: function that gets the all the contacts, and their available times, for a meeting specified by meeting_id
+-----------------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_uuid: A meetings unique uuid created url
+    
+    side affects:
+        Converts python datetime.timedelta object for start time and end time to a string of form HH:MM
+
+    return:
+        resp: an array of tuples (date, start_time, end_time) for each respondent
+'''
 def get_responded(meeting_id):
     resp={} #list of who's responded
     date_time=[]
@@ -746,6 +1222,21 @@ def get_responded(meeting_id):
     conn.close()
     return resp 
 
+
+
+
+'''
+Mysql helper: function that gets the email of the user that created the the meeting specified by the unique meeting_uuid
+------------------------------------------------------------------------------------------------------------
+    arguments:
+        meeting_uuid: A meetings unique uuid created url
+    
+    side affects:
+        None
+
+    return:
+        email: A string for the email address of the user that created a specific meeting
+'''
 def get_creator_email(meeting_uuid):
     query_string="select creator_email from meetings where uuid='{}';".format(meeting_uuid)
     conn =  mysql.connect()
@@ -755,13 +1246,3 @@ def get_creator_email(meeting_uuid):
     conn.close()
     email=meeting[0]
     return email
-
-
-
-#################
-## Favicon function rendering
-#################
-
-@app.route('/favicon.ico')
-def favicon():
-    return flask.send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
