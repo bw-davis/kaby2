@@ -120,7 +120,7 @@ $(document).ready(function(){
                                     <div class="col-sm-1"> 
                                     </div>
                                         <div class="col-sm-9 text-left">
-                                            <input type="checkbox" name="available_times" value="{{date}}-{{st}}-{{et}}" /><span id="{{loop.index}}" > {{ str(st)[0:5] }} - {{ str(et)[0:5] }} </span><br/>
+                                            <input type="checkbox" name="available_times" value="{{date}}-{{st}}-{{et}}" /><span id="{{loop.index}}" > {{ (st|string())[0:5] }} - {{ (et|string())[0:5] }} </span><br/>
                                         </div>
                                 </div>
                             </div>
