@@ -1045,9 +1045,8 @@ def get_upcoming_meetings():
     cur.execute(query_string)
     rows= cur.fetchall()
     for row in rows:
-        #print("\n\n row {} \n\n".format(row));
         if (row[2] != ""): 
-            meetings.append((row[6], row[8]))
+            meetings.append((row[9], row[8]))
     conn.close();
 
 
