@@ -472,7 +472,15 @@ def get_dts(meeting_id):
     all_dts=[]
     dts = cur.fetchall()
     for i in dts:
-        dt, stime, etime = i[4], i[2], i[3]
+        st = str(i[2])
+        shour, smin, ssec = st.split(":")
+        stime="{}:{}".format(shour, smin)
+        print("\n\n\n stime {}\n\n\n".format(stime))
+        et = str(i[3])
+        ehour, emin, esec = et.split(":")
+        etime="{}:{}".format(ehour, emin)
+        print("\n\n\netime {}\n\n\n".format(etime))
+        dt = i[4] 
         #print("dt {}, stime {}, etime {}".format(dt, stime, etime))
         all_dts.append((dt, stime, etime))
     conn.close()
@@ -713,9 +721,25 @@ def get_responded(meeting_id):
     respond = cur.fetchall()
     for i in respond:
         if i[3] in resp: #If the date is already in the dict
-            resp[i[3]].append((i[0], i[1], i[2], i[4]));
+            st = str(i[1])
+            shour, smin, ssec = st.split(":")
+            stime="{}:{}".format(shour, smin)
+            print("\n\n\n stime {}\n\n\n".format(stime))
+            et = str(i[2])
+            ehour, emin, esec = et.split(":")
+            etime="{}:{}".format(ehour, emin)
+            print("\n\n\netime {}\n\n\n".format(etime))
+            resp[i[3]].append((i[0], stime, etime, i[4]));
         else: # if date is not in dict
-            resp[i[3]] = [(i[0], i[1], i[2], i[4])];
+            st = str(i[1])
+            shour, smin, ssec = st.split(":")
+            stime="{}:{}".format(shour, smin)
+            print("\n\n\n stime {}\n\n\n".format(stime))
+            et = str(i[2])
+            ehour, emin, esec = et.split(":")
+            etime="{}:{}".format(ehour, emin)
+            print("\n\n\netime {}\n\n\n".format(etime))
+            resp[i[3]] = [(i[0], stime, etime, i[4])];
     conn.close()
     return resp 
 
