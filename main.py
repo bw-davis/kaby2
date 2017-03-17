@@ -128,7 +128,6 @@ Routing function used to render the long.html file when some successful logs in
 @app.route('/')
 @app.route('/login')
 def login():
-    #print("login")
     return render_template('login.html') 
 
 
@@ -295,7 +294,6 @@ def respond(meeting_id):
     print(meeting_id)  
     dates=get_dts(meeting_id)
     response_meeting=meeting_id;
-    print("\n\nresp id1 {}\n\n".format(response_meeting))
     print("dates ={}", dates)
     return render_template('respond.html', names=get_leaders_for_meetingID(meeting_id),
             dts=dates)
@@ -347,9 +345,7 @@ def login_action():
     query_string = "SELECT password from user where email='{}'".format(email)
     cur.execute(query_string)
     rows = cur.fetchall()
-    print("\n\n\n  rows={}".format(rows))
     for row in rows:
-        print("\n\n\n  password={}".format(row[0]))
         if (row[0]==passwd):
             print("matches")
             session['username'] = email 
@@ -423,10 +419,8 @@ def form_action():
     insert_meeting(loc, desc, length_min, uuid_url, name, session['username'])
     leaders_to_meet = request.form.getlist('dd2');
     for l in leaders_to_meet:
-        #print("email {}".format(l));
         email_list.append(l);
         set_response(l);
-    print("im here!!!!!!!!!!");
     dates.sort();
     return render_template('time_picker.html', dates=dates,length_min0=length_min) 
 
@@ -458,16 +452,13 @@ def newmeeting_action():
     conn =  mysql.connect()
     cur = conn.cursor()
     for i in range(num_dates):
-        #print("global dates[i]={}".format(dates[i]))
         name = "t{}".format(i+1)
         month, day, year = dates[i].split("/")
         sql_date='{}-{}-{}'.format(year, month,day)
         time = request.form.get(name)
-        #sql_time='{}:00:00'.format(time)
         time_ranges = time.split(',')
         for t in time_ranges:
             start_time, end_time = t.split('-')
-            #print("start {} end {}".format(start_time, end_time)) 
             start_hour = start_time[0:2]
             start_mins = start_time[2:]
             end_hour   = end_time[0:2]
@@ -475,14 +466,12 @@ def newmeeting_action():
             sql_start_time = '{}:{}:00'.format(start_hour, start_mins)
             sql_end_time = '{}:{}:00'.format(end_hour, end_mins) 
             result = split_into_intervals(sql_date, sql_start_time, sql_end_time, int(length_min))
-            #print(result)
             for d, s, e in result:
                 query_string = "INSERT INTO dates_times (dt_id, meeting_id, start_time, end_time, meeting_date) VALUES ({}, {}, '{}', '{}', '{}');".format("NULL", cur_meeting_id, s, e , d)
                 cur.execute(query_string)
                 conn.commit()
     conn.close()
     link = "http://ix.cs.uoregon.edu:5951/respond/" + uuid_url
-    #link = "http://127.0.0.1:5000/respond/" + uuid_url
     send_message("You've been invited", link, email_list)
     get_upcoming_meetings()
     get_past_meetings()
@@ -512,8 +501,6 @@ def respond_meeting():
         available_times=['0000-00-00-00:00:00-00:00:00']
     else:
         available_times = [x.encode('ascii','ignore') for x in available_times] #convert from unicode to str
-    print("\n\n")
-    print(available_times)
     user_id= group_leader_email_to_id(user_name)
     insert_user_response(user_id ,response_meeting, available_times)
     m_id=uuid_to_meeting_id(response_meeting); #meeting_id here is uuid_url, shoudl change.
@@ -521,13 +508,8 @@ def respond_meeting():
     email=get_creator_email(response_meeting);
     email_list=[email]
     link="http://ix.cs.uoregon.edu:5951/view_meeting/" + response_meeting
-    #link="http://127.0.0.1:5000/view_meeting/" + response_meetingh
-    #print("\n\n number not responded = {} \n\n").format(num_not_resp);
     if(num_not_resp == 0):
-        #print("email prfessor")
         send_message("All groups have responded", link, email_list);
-    else:
-        print("dont email yet")
     return flask.redirect(flask.url_for("thanks"))
 
 
@@ -546,9 +528,7 @@ Post method used to get all user input from the view_meeting page add this to th
 @app.route('/viewmeeting_action', methods=['POST'])
 def viewmeeting_action():
     global cur_meeting_id;
-    print("\n\n\n hello there \n\n\n")
     sel_times = request.form.getlist('sel_times')
-    print("\n\n sel_times = {}".format(sel_times));
     reset_all_response_check(cur_meeting_id)
     check_meetings(sel_times)
     return flask.redirect(flask.url_for("home"))
@@ -600,8 +580,6 @@ def split_into_intervals(date, st, et, meeting_len):
     result = []
     st_fmt = "{} {}".format(date, st)
     et_fmt = "{} {}".format(date, et)
-    print("st_fmt: ", st_fmt)
-    print("et_fmt: ", et_fmt)
     st_dt = datetime.strptime(st_fmt, "%Y-%m-%d %H:%M:%S")
     et_dt = datetime.strptime(et_fmt, "%Y-%m-%d %H:%M:%S")
     delta = timedelta(0, meeting_len*60)  #timedelta takes seconds
@@ -659,7 +637,6 @@ Mysql helper: converts a group_leader_email to a group_leader_id an passes that 
         None
 '''
 def add_to_respond_meeting(leader_id, meeting_id):
-	#print("adding to respond_meeting table")
 	query_add_respond = "insert into respond_meeting (issue_ID, group_id) values ({},{})".format(meeting_id, leader_id);
 	conn = mysql.connect()
 	cur = conn.cursor()
@@ -687,7 +664,6 @@ def set_response(leader):
     cur2.execute(query_string_userID)
     p = cur2.fetchone()
     leader_to_add = p[0];
-    #print("\n\n just got {} \n\n".format(leader_to_add));
     conn2.close();
     add_to_respond_meeting( leader_to_add,cur_meeting_id);
 
@@ -740,7 +716,6 @@ def get_leaders_for_meetingID(uuid_url):
     cur.execute(query_string)
     meeting = cur.fetchone()
     meeting_id = meeting[0];
-    #print(meeting_id)
     all_attendees = all_contacts_id_for_meeting(meeting_id)
     conn.close()
     return all_attendees
@@ -765,9 +740,7 @@ def all_contacts_id_for_meeting(meeting_id):
     cur = conn.cursor()
     cur.execute(query_string)
     attendees = cur.fetchall()
-    #print("attendees")
     for a in attendees:
-    #    print(a);
         all_attendees.append(get_contacts_for_meeting(a[1]))
         
     conn.close()
@@ -791,7 +764,6 @@ def get_contacts_for_meeting(group_leader_id):
     cur = conn.cursor()
     cur.execute(query_string)
     attendees = cur.fetchone()
-    #print(attendees[1]);
     conn.close()
     return attendees[1];
 
@@ -817,13 +789,10 @@ def get_dts(meeting_id):
         st = str(i[2])
         shour, smin, ssec = st.split(":")
         stime="{}:{}".format(shour, smin)
-        print("\n\n\n stime {}\n\n\n".format(stime))
         et = str(i[3])
         ehour, emin, esec = et.split(":")
         etime="{}:{}".format(ehour, emin)
-        print("\n\n\netime {}\n\n\n".format(etime))
         dt = i[4] 
-        #print("dt {}, stime {}, etime {}".format(dt, stime, etime))
         all_dts.append((dt, stime, etime))
     conn.close()
     return all_dts;
@@ -866,14 +835,12 @@ Mysql helper: gets the unique dt_id(date time id) for a specific date and time
         Returns the leaders who can meet at this time.
 '''
 def get_dt_id(meeting_id, meeting_date):
-    #print("id {} date {}".format(meeting_id, meeting_date));
     query_string = "select * from meetings join dates_times using (meeting_id) where uuid='{}'".format(meeting_id)
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_string)
     leader = cur.fetchone()
     conn.close()
-    #print("\n\n leader = {} \n\n".format(leader))
     if (not leader):
         return None
     return leader[0];
@@ -928,11 +895,9 @@ def check_meetings(sel_times):
     conn =  mysql.connect()
     cur = conn.cursor()
     cur.execute(query_allow_update)
-    print("\n\n\n sel_time = {}".format(sel_times))
     for meeting in sel_times:
         dt_id, name, meeting_date, start_time, end_time = meeting.split(",")
         query_string="update response set checked=1 where dt_id={} and start_time='{}' and end_time='{}' and group_leader_id = (select  group_leader_id from group_leader where group_name='{}' limit 1) and meeting_date='{}';".format(dt_id, start_time, end_time, name, meeting_date)
-        print(query_string); 
         cur.execute(query_string)
         conn.commit()
 
@@ -968,7 +933,6 @@ def delete_prevous_response(available_times, meeting_id, group_leader_id):
         cur = conn.cursor()
         year, day, month, stime, etime = d.split("-")
         m_date = '{}-{}-{}'.format(year,day,month)
-        #print("date {} stime {} etime{}".format(m_date, stime, etime))
         dt_id = get_dt_id(meeting_id,m_date)
         if(not dt_id):
             conn.close()
@@ -1004,14 +968,11 @@ def insert_user_response(group_leader_id, meeting_id, available_times):
         for a in available_times:
             year, day, month, stime, etime = a.split("-")
             m_date = '{}-{}-{}'.format(year,day,month)
-            print("\n\nm_date {}| stime ={} | etime={}".format(m_date, stime, etime))
-            #print("date {} stime {} etime{}".format(m_date, stime, etime))
             dt_id = get_dt_id(meeting_id,m_date)
             query_string = "insert into response (dt_id, start_time, end_time, group_leader_id, checked, meeting_date) values ({},'{}','{}',{}, 0, '{}');".format(dt_id, stime, etime, group_leader_id, m_date)
             #print("query string = {}".format(query_string))
             cur = conn.cursor()
             try:
-                print("\n\n queyr = {}".format(query_string))
                 cur.execute(query_string)
                 cur_meeting_id = cur.lastrowid
                 conn.commit()
@@ -1072,7 +1033,6 @@ def get_past_meetings():
     cur.execute(query_string)
     rows= cur.fetchall()
     for row in rows:
-        #print("\n\n row {} \n\n".format(row));
         if (row[2] != ""): 
             past_meetings.append((row[9], row[8]))
     conn.close();
@@ -1122,7 +1082,6 @@ def get_not_responded(meeting_uuid):
     non_respond = cur.fetchall()
     for i in non_respond:
         num_not_respond= num_not_respond + 1
-        #print("not resp {}".format(i))
         not_responded.append(i[0])
     conn.close()
     return not_responded 
@@ -1149,7 +1108,6 @@ def get_num_non_responded(meeting_uuid):
     cur.execute(query_string)
     non_respond = cur.fetchone()
     conn.close()
-    #print("num not resp={}".format(non_respond[0]));
     return non_respond[0] 
 
 
@@ -1202,21 +1160,17 @@ def get_responded(meeting_id):
             st = str(i[1])
             shour, smin, ssec = st.split(":")
             stime="{}:{}".format(shour, smin)
-            print("\n\n\n stime {}\n\n\n".format(stime))
             et = str(i[2])
             ehour, emin, esec = et.split(":")
             etime="{}:{}".format(ehour, emin)
-            print("\n\n\netime {}\n\n\n".format(etime))
             resp[i[3]].append((i[0], stime, etime, i[4]));
         else: # if date is not in dict
             st = str(i[1])
             shour, smin, ssec = st.split(":")
             stime="{}:{}".format(shour, smin)
-            print("\n\n\n stime {}\n\n\n".format(stime))
             et = str(i[2])
             ehour, emin, esec = et.split(":")
             etime="{}:{}".format(ehour, emin)
-            print("\n\n\netime {}\n\n\n".format(etime))
             resp[i[3]] = [(i[0], stime, etime, i[4])];
     conn.close()
     return resp 
