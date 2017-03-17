@@ -47,17 +47,6 @@ uuid_url="";
 response_meeting="";
 
 
-def get_group_leaders():
-	global group_leaders 
-	group_leaders=[]
-	conn = mysql.connect()
-	cur = conn.cursor()
-	query_string="select group_leader_email from group_leader;"
-	cur.execute(query_string)
-	rows = cur.fetchall()
-	for row in rows:
-		group_leaders.append(row[0]);
-	conn.close()
 
 @app.before_request
 def before_action():
@@ -388,6 +377,20 @@ def split_into_intervals(date, st, et, meeting_len):
 #################
 ## MySQL query functions
 ################
+
+
+
+def get_group_leaders():
+	global group_leaders 
+	group_leaders=[]
+	conn = mysql.connect()
+	cur = conn.cursor()
+	query_string="select group_leader_email from group_leader;"
+	cur.execute(query_string)
+	rows = cur.fetchall()
+	for row in rows:
+		group_leaders.append(row[0]);
+	conn.close()
 
 
 def add_to_respond_meeting(leader_id, meeting_id):
